@@ -1,0 +1,41 @@
+% Insert from a directory where generated/ points to the export-paper output.
+\begin{table}[t]
+\caption{TEP Macro-F1 at $k=1$. Means and sample SDs summarize ten five-fold repetition means. Spurious corruption uses $s=0.3$.}
+\label{tab:main}
+\centering
+\begingroup
+\small
+\setlength{\tabcolsep}{2pt}
+\input{generated/tables/main_table.tex}
+\endgroup
+\end{table}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.49\textwidth]{generated/figures/clean_tep.pdf}\hfill
+\includegraphics[width=0.49\textwidth]{generated/figures/spurious_tep_k1.pdf}
+\caption{TEP Macro-F1 versus labelled episodes per class (left) and spurious severity at $k=1$ (right). Points and error bars show means and sample SDs across ten five-fold repetition means.}
+\label{fig:profiles}
+\end{figure*}
+
+\begin{table}[t]
+\caption{Mean TEP Macro-F1 at $k=1$ and $s=0.3$ for corruption structures absent from pretraining. Mixed denotes missing--spurious composition.}
+\label{tab:transfer}
+\centering
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\input{generated/tables/transfer_table.tex}
+\endgroup
+\end{table}
+
+\begin{table}[t]
+\caption{Macro-F1 at $k=1$ versus available history $H_U$ [h] across all classes. E/F denote \emph{CorA-MAPLE-E/F}; Full contains 800 h. Mean and sample SD summarize ten repetition means after averaging pool selections, perturbation realizations, and folds.}
+\label{tab:unlabelled_pool}
+\centering
+\begingroup
+\small
+\setlength{\tabcolsep}{1.5pt}
+\input{generated/tables/unlabelled_pool_table_compact.tex}
+\endgroup
+\end{table}

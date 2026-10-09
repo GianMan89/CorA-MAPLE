@@ -1,0 +1,31 @@
+{
+  "tep": {
+    "shape": [
+      1000,
+      50,
+      60
+    ],
+    "class_counts": {
+      "idv1": 200,
+      "idv14": 200,
+      "idv1_and_idv5": 200,
+      "idv2": 200,
+      "idv6": 200
+    },
+    "unique_recordings": 1000,
+    "redundant_recordings": 0,
+    "duplicate_groups": 0,
+    "onsets_mean": 30.019,
+    "events_mean": 56.227,
+    "active_tags_mean": 16.515,
+    "minutes_retained": [
+      1,
+      60
+    ],
+    "series_local_grid": [
+      0,
+      59
+    ]
+  },
+  "archive_sha256": "f6e11bc32ac57447cd18250f24dca351b83bfe8111498d6a3aef855ef079ec76"
+}

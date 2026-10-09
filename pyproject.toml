@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cora-maple"
+version = "1.0.0"
+description = "Corruption-aware self-supervised pretraining for offline alarm flood classification"
+readme = "README.md"
+requires-python = ">=3.11,<3.15"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Gianluca Manca"},
+  {name = "Kihoon Lee"},
+  {name = "Amirhossein Najafi"},
+  {name = "Alexander Fay"},
+  {name = "Tongwen Chen"},
+]
+keywords = ["alarm flood classification", "self-supervised learning", "robustness", "TEP"]
+dependencies = [
+  "numpy>=2,<3", "pandas>=2.2,<3", "scipy>=1.14,<2", "scikit-learn>=1.6,<1.9",
+  "torch>=2.6,<2.11", "PyYAML>=6,<7", "matplotlib>=3.9,<4",
+  "filelock>=3.12,<4", "joblib>=1.3,<2", "threadpoolctl>=3,<4",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "build>=1"]
+
+[project.urls]
+Repository = "https://github.com/GianMan89/CorA-MAPLE"
+
+[project.scripts]
+cora-maple = "cora_maple.__main__:main"
+
+[tool.setuptools]
+packages = ["cora_maple", "afc_excerpt_ssl", "afc_robustness", "afc_robustness.models"]
+
+[tool.setuptools.package-dir]
+cora_maple = "src/cora_maple"
+afc_excerpt_ssl = "src/afc_excerpt_ssl"
+afc_robustness = "vendor/afc_robustness"
+"afc_robustness.models" = "vendor/afc_robustness/models"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "vendor"]
+addopts = "-ra"

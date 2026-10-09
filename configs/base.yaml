@@ -1,0 +1,87 @@
+# Shared scientific configuration. Every study extends this file.
+protocol: cora_maple_cv10x5_v1
+data:
+  path: data/processed/tep_60min.npz
+  observation_samples: 60
+  sample_period_minutes: 1.0
+  expected_recordings: 1000
+  expected_channels: 50
+cv:
+  n_splits: 5
+  n_repeats: 10
+  partition_seed: 2027
+  label_seed: 27011
+  training_seed: 37013
+  pool_seed: 47017
+model:
+  d_model: 48
+  patch_size: 3
+  n_layers: 2
+  n_heads: 4
+  feedforward_multiplier: 2
+  activation: gelu
+  dropout: 0.1
+objective:
+  ema: 0.99
+  raw_weight: 0.25
+  var_weight: 0.10
+  gamma: 0.5
+  epsilon: 0.0001
+training:
+  crop_lengths: [15, 30, 45, 60]
+  mask_ratio: 0.3
+  pretrain_batch: 32
+  pretrain_steps: 800
+  pretrain_lr: 0.001
+  finetune_batch: 32
+  finetune_steps: 400
+  finetune_lr: 0.001
+  weight_decay: 0.0001
+  adam_betas: [0.9, 0.999]
+  adam_epsilon: 0.00000001
+  gradient_clip_norm: 1.0
+  augmentation_bank_size: 8  # Scratch+Aug: fixed views per labelled source.
+  log_interval: 50
+corruption:
+  identity_probability: 0.2
+  operators: [missing, spurious, timing]
+  probabilities: [0.3333333333333333, 0.3333333333333333, 0.3333333333333333]
+  severity_min: 0.05
+  severity_max: 0.20
+  timing_max_shift_minutes: 10.0
+  burst_half_width_minutes: 2.0
+  initial_active_policy: act
+  repair: retained_AFC_RobustBench_TraceRepair
+  mixed_order: [missing, spurious]
+  mixed_repair_between_stages: true
+  tag_budget: floor_severity_times_all_channels
+  event_budget: floor_severity_times_current_event_count
+test:
+  seed: 57037
+  operators: [missing, spurious, timing, burst, tag_dropout, mixed]
+  severities: [0.0, 0.1, 0.2, 0.3]
+  draws: 3
+  inference_batch: 128
+baselines:
+  EAC-1NN:
+    attenuation: 0.01
+    time_scale: event_index
+    distance: euclidean
+    normalize: true
+  MBW-LR:
+    C: 1.0
+    penalty: l2
+    solver: lbfgs
+    fit_intercept: true
+    max_iter: 1000
+    use_idf: true
+    use_time_weight: true
+    time_epsilon: 1.0
+  JAC-1NN: {}
+  WDI-1NN:
+    template_threshold: 0.5  # Retained implementation uses frequency > threshold.
+  ACM-SVM:
+    C: 1.0
+    kernel: rbf
+    gamma: scale
+    probability: false

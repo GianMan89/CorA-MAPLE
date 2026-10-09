@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "static_validation": {
+    "python_files_parsed": 45,
+    "python_grammar": "3.11",
+    "json_files_parsed": 348,
+    "yaml_files_parsed": 11,
+    "package_targets_present": true,
+    "configuration_inheritance_resolved": true,
+    "default_methods_match_manuscript": true,
+    "fixed_eight_view_supervised_augmentation": true,
+    "numeric_upstream_modules_unchanged": true
+  },
+  "data": {
+    "raw_csvs": 1000,
+    "raw_files_byte_identical": true,
+    "processed_tensor_byte_identical": true
+  },
+  "reference_results": {
+    "measurements_and_checkpoints_byte_compared": 946,
+    "all_compared_bytes_unchanged": true,
+    "protocol": "reference_cv3"
+  },
+  "execution": {
+    "training_runs": 0,
+    "benchmark_evaluations": 0,
+    "unit_test_runs": 0
+  },
+  "configured_workload": {
+    "cv_repeats": 10,
+    "cv_folds": 5,
+    "main_classifier_fits": 2400,
+    "additional_history_classifier_fits": 2700,
+    "unique_classifier_fits": 5100,
+    "unique_pretraining_tasks": 2950,
+    "unique_tasks": 8050
+  }
+}

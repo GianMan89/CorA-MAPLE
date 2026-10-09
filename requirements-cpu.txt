@@ -1,0 +1,5 @@
+# Linux/Windows CPU environment; macOS uses the standard PyTorch wheel.
+--extra-index-url https://download.pytorch.org/whl/cpu
+-r requirements.txt
+torch==2.10.0+cpu ; sys_platform != "darwin"
+torch==2.10.0 ; sys_platform == "darwin"

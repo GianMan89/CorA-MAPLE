@@ -1,0 +1,69 @@
+augmentation_max_severity: 0.2
+baselines:
+- EAC-1NN
+- MBW-LR
+- JAC-1NN
+- WDI-1NN
+- ACM-SVM
+crop_lengths:
+- 15
+- 30
+- 45
+- 60
+datasets:
+- tep
+finetune_batch: 32
+finetune_lr: 0.001
+finetune_steps: 400
+folds:
+- 0
+- 1
+- 2
+label_budgets:
+- 1
+- 2
+- 5
+- 20
+mask_ratio: 0.3
+methods:
+- scratch
+- scratch_aug
+- mae_excerpt
+- latent_excerpt
+- latent_robust_excerpt
+- latent_robust_full
+model:
+  d_model: 48
+  dropout: 0.1
+  n_layers: 2
+  patch_size: 3
+n_folds: 3
+name: tep_primary
+objective:
+  ema: 0.99
+  raw_weight: 0.25
+  var_weight: 0.1
+observation_samples: 60
+partition_seed: 2027
+perturbation_draws: 3
+perturbations:
+- missing
+- spurious
+- timing
+- burst
+- tag_dropout
+- mixed
+phase: three_fold_reference
+pretrain_batch: 32
+pretrain_lr: 0.001
+pretrain_steps: 800
+sample_period_minutes: 1.0
+seeds:
+- 0
+severities:
+- 0
+- 0.1
+- 0.2
+- 0.3
+threads: 1
+weight_decay: 0.0001

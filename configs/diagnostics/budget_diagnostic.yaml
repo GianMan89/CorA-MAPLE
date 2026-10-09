@@ -1,0 +1,11 @@
+# Optional controls rerun on the same NEW 10x5 protocol; no old endpoints reused.
+extends: ../base.yaml
+study:
+  name: budget_diagnostic
+  kind: diagnostic
+  methods: [scratch, scratch_aug, scratch_long, scratch_aug_long, cora_maple_excerpt, cora_maple_full, cora_maple_excerpt_matched]
+  label_budgets: [1, 5]
+  label_draws: [0]
+  model_seeds: [0]
+  pool_sizes: [full]
+  pool_draws: [0]

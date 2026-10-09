@@ -1,0 +1,8 @@
+# Preserve byte-level provenance across clones and platforms.
+* -text
+*.npz binary
+*.pt binary
+*.pdf binary
+*.png binary
+*.gz binary
+*.zip binary

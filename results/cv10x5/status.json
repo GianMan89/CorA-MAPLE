@@ -1,0 +1,17 @@
+{
+  "protocol": "cora_maple_cv10x5_v1",
+  "status": "not_run",
+  "n_splits": 5,
+  "n_repeats": 10,
+  "primary_classifier_fits": 2400,
+  "primary_pretraining_tasks": 250,
+  "additional_history_classifier_fits": 2700,
+  "additional_history_pretraining_tasks": 2700,
+  "reused_full_history_classifiers": 100,
+  "unique_classifier_fits": 5100,
+  "completed_classifier_fits": 0,
+  "completed_pretraining_tasks": 0,
+  "workspace_default": "runs/tep_cv10x5",
+  "reference_results": "../reference_cv3",
+  "scope": "distribution_snapshot"
+}

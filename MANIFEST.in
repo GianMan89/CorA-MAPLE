@@ -1,0 +1,4 @@
+include LICENSE README.md CITATION.cff THIRD_PARTY_NOTICES.md
+recursive-include configs *.yaml
+recursive-include vendor *.py *LICENSE *.json
+recursive-include docs *.md

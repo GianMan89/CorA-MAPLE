@@ -1,0 +1,53 @@
+{
+  "files": [
+    {
+      "path": "afc_robustness/repair.py",
+      "upstream_sha256": "c29239c264ca621b2e909aa3095e92aadd3bd1249a5ee5feb45e63cb02180aff"
+    },
+    {
+      "path": "afc_robustness/domain.py",
+      "upstream_sha256": "6096aa9c2a7d23236863dc0e46670bd266fd9569bae31303a16f1f2c9d09f56c"
+    },
+    {
+      "path": "afc_robustness/perturbations.py",
+      "upstream_sha256": "e54b73f0398acaacfcdf1ca80d1860ff3665496405e08b71781cc460770e86c8"
+    },
+    {
+      "path": "afc_robustness/__init__.py",
+      "upstream_sha256": "5d934c941dec61dd80268fb8d68c44f77ddf0ac9ff0a1e1a02a005473870cc4c"
+    },
+    {
+      "path": "afc_robustness/representations.py",
+      "upstream_sha256": "1592a4c1471f71861ed6a5c22b9d867a380e810a54a3f27bce4ad87cfafd09cf"
+    },
+    {
+      "path": "afc_robustness/models/acm_svm.py",
+      "upstream_sha256": "c1a16f6ffa499d07a6ed5cd16981a2ca0d42fdb614fc8e66bdf5a680cf0a8721"
+    },
+    {
+      "path": "afc_robustness/models/mbw_lr.py",
+      "upstream_sha256": "022e814c6607d7f03b0c6581b13ede610d9786f58c3f478d4c384b8a341204d1"
+    },
+    {
+      "path": "afc_robustness/models/jaccard.py",
+      "upstream_sha256": "302eea22fd0d5e086fa7fa5272a7ff03a997f3165a0dfeb68d39ba8acf34e907"
+    },
+    {
+      "path": "afc_robustness/models/wdi.py",
+      "upstream_sha256": "b731e298c18f46d0f43d172b124306e38f688666b849a170bd100cb6730ddb06"
+    },
+    {
+      "path": "afc_robustness/models/base.py",
+      "upstream_sha256": "6a1a9ab9b6335f44d58530fdead7ba6cc42fe6699ba36fc88adf6a9414e8fcbd"
+    },
+    {
+      "path": "afc_robustness/models/__init__.py",
+      "upstream_sha256": "8f6177bfccf0e078f981067877f109b61a843cd0c1a58cd9146bfc355c7683bf"
+    },
+    {
+      "path": "afc_robustness/models/eac.py",
+      "upstream_sha256": "ef690a4038891d8aa6aa5124641b15c99311b45c7a53a2297389745bd85b88d2"
+    }
+  ],
+  "package_initialization": "models/__init__.py exports the five included classifiers; numerical implementation files are unchanged."
+}

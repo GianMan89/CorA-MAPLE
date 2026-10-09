@@ -1,0 +1,23 @@
+{
+  "fold": 0,
+  "pool_repeat": 0,
+  "pool_n": 200,
+  "method": "latent_robust_excerpt",
+  "pretrain_seconds": 24.611241215000064,
+  "finetune_seconds": 1.70993597100005,
+  "train_accuracy": 1.0,
+  "train_loss": 0.00026465507107786834,
+  "pretrain_stats": {
+    "crops": 25600,
+    "empty_crops": 67,
+    "minutes": 987840,
+    "events": 958062,
+    "updates": 800,
+    "patch_tokens": 329280
+  },
+  "elapsed_seconds": 27.714479719999872,
+  "classifier_sha256": "ec479ea537e65ece79c2b9967038cabf416b5a5900c3de376ebed17026985c4f",
+  "predictions_sha256": "b41909743479ba3952d58ba539f9261b0d877261b559ec36c2d67348bd92e2d7",
+  "clean_f1": 0.9969918009612666,
+  "spurious_f1_s03": 0.7311543025578091
+}

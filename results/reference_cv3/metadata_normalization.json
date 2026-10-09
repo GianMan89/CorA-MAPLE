@@ -1,0 +1,56 @@
+[
+  {
+    "file": "results/reference_cv3/tep_long_supervised/config.lock.yaml",
+    "original_sha256": "336b26e2f53d1d87eec401761b910d628b8dfa6a9540b93e488f80faa7420c63",
+    "release_sha256": "2b304843a59efa9075d4f5ce88d888943c6b919f20dc1d628ef72a67e7b515f1",
+    "change": "Descriptive metadata terminology only; numerical data and configuration values retained."
+  },
+  {
+    "file": "results/reference_cv3/tep_long_supervised/run_manifest.json",
+    "original_sha256": "7144b5bd9c71466a29d03ffdaf2f2c76a6a0711831b786952a9a7fc79acaf981",
+    "release_sha256": "c055b5f0faccc7699250cf0b295f535033066c1fa32750d3c4738d8b1e06918c",
+    "change": "Descriptive metadata terminology only; numerical data and configuration values retained."
+  },
+  {
+    "file": "results/reference_cv3/tep_primary/config.lock.yaml",
+    "original_sha256": "1454e2d6dc0301f8705a73c0cde24ba334c45d9114e7a0f0899d417aca909a81",
+    "release_sha256": "ee398749f26a7cf65ad7c554872bf181406169f7319e68825342edb8b8f2a3df",
+    "change": "Descriptive metadata terminology only; numerical data and configuration values retained."
+  },
+  {
+    "file": "results/reference_cv3/tep_primary/run_manifest.json",
+    "original_sha256": "c9601d65b09b1f42159e4be277c6297e2da1399e20887f8a1f2659982e1145a6",
+    "release_sha256": "a88588f2d5dba6ee5b4b6c473ed9a5c09c495b7bed4e0879ad9eaaaeff6455a5",
+    "change": "Descriptive metadata terminology only; numerical data and configuration values retained."
+  },
+  {
+    "file": "results/reference_cv3/tep_additional_controls/run_manifest.json",
+    "original_sha256": "eab9d33ccf36d00a99b3aee76a208769575b46b27c95682fefde7152539ae036",
+    "release_sha256": "ad02e482871d7d7a179bbeb538a65517a3e394449b91d032c806fe7a747c8be7",
+    "change": "Descriptive metadata terminology only; numerical data and configuration values retained."
+  },
+  {
+    "file": "results/reference_cv3/tep_absolute_scaling/run_manifest.json",
+    "original_sha256": "544f92d56c35ad03a48420e9cd1c201676bb13118d736a780fa4ad953f3b690d",
+    "release_sha256": "a0bb88eda766ecf397c576de40c3b6e1f5d76331e0d7b6ea3f3299e6bb4ec42a",
+    "change": "Descriptive metadata terminology only; numerical data and configuration values retained."
+  },
+  {
+    "file": "results/reference_cv3/tep_absolute_scaling/execution_source/afc_excerpt_ssl/run.py",
+    "original_sha256": "c1d8bb8bf6defb23d748cbf292901011de959634e4eaf80f3204e9e28b106782",
+    "release_sha256": "21efe1042ecba60b474eb19b4f79ca66f7037aa728220d8bdd0ebc26587199fc",
+    "change": "Descriptive metadata terminology only; numerical data and configuration values retained."
+  },
+  {
+    "file": "results/reference_cv3/tep_absolute_scaling/execution_source/afc_excerpt_ssl/scaling.py",
+    "original_sha256": "00aa819ed748f5aa550dc37c86b5ad992a28bb5fb28d24bd23b4fc397aabfef7",
+    "release_sha256": "d1a16e3835ff9ddc7a2de6e46f6451aebef2bc8311f4a717593caeece0cd7912",
+    "change": "Descriptive metadata terminology only; numerical data and configuration values retained."
+  },
+  {
+    "file": "results/reference_cv3/tep_absolute_scaling/execution_source/afc_excerpt_ssl/absolute_scaling.py",
+    "original_sha256": "3840362ebfeaf6268162ba65661f3353655258324a3826f7cd26a327a120d7d0",
+    "release_sha256": "ff8c1a2c6921df01865d34153454068c37ba985ae49caa0b4069b4208497692b",
+    "change": "Descriptive metadata terminology only; numerical data and configuration values retained."
+  }
+]
