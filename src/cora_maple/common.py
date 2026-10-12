@@ -45,7 +45,7 @@ def source_hash() -> str:
     records = {}
     for folder in (ROOT / "src", ROOT / "vendor"):
         for path in sorted(folder.rglob("*.py")):
-            records[str(path.relative_to(ROOT))] = file_hash(path)
+            records[path.relative_to(ROOT).as_posix()] = file_hash(path)
     return digest(records)
 
 def atomic_json(path: Path, value: Any) -> None:

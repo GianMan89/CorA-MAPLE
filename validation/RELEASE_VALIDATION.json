@@ -1,0 +1,104 @@
+{
+  "status": "passed",
+  "version": "2.1.0",
+  "protocol": "cora_maple_clean_ft_cv10x5_v2_1",
+  "software_tests": {
+    "count": 71,
+    "command": "python -m pytest -q",
+    "scope": "Synthetic model fitting, all neural controls, padding/snapshot semantics, paired test inputs, spawn execution, report/export completeness, cached resume, and exact prediction replay. No TEP model training."
+  },
+  "training_settings": {
+    "excerpt": {
+      "pretrain_steps": 4000,
+      "finetune_steps": 2400
+    },
+    "full": {
+      "pretrain_steps": 4000,
+      "finetune_steps": 2400
+    },
+    "supervised_objective": "clean_cross_entropy"
+  },
+  "configured_task_graph": {
+    "primary": {
+      "tasks": {
+        "pretrain": 200,
+        "fit": 1200,
+        "baseline": 1000
+      },
+      "additional_tasks": {
+        "pretrain": 200,
+        "fit": 1200,
+        "baseline": 1000
+      },
+      "shared_tasks": 0
+    },
+    "pool_sizes": {
+      "tasks": {
+        "pretrain": 2800,
+        "fit": 2800,
+        "baseline": 0
+      },
+      "additional_tasks": {
+        "pretrain": 2700,
+        "fit": 2700,
+        "baseline": 0
+      },
+      "shared_tasks": 200
+    },
+    "unique_tasks": 7800
+  },
+  "dataset": {
+    "status": "passed",
+    "source_recordings": 1000,
+    "classes": 5,
+    "channels": 50,
+    "samples_per_recording": 60,
+    "all_processed_arrays_equal_to_csv_rebuild": {
+      "X": true,
+      "y": true,
+      "run_ids": true,
+      "ids": true,
+      "tags": true,
+      "hashes": true
+    },
+    "dataset_sha256": "6b2f61bbe7074f428f8267574c79ac5b09a8e817c2313991d399b37dcffdc354"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "packages": {
+      "numpy": "2.3.5",
+      "pandas": "2.2.3",
+      "scipy": "1.17.0",
+      "scikit-learn": "1.8.0",
+      "torch": "2.10.0+cpu",
+      "PyYAML": "6.0.3",
+      "matplotlib": "3.10.8",
+      "filelock": "3.29.0",
+      "joblib": "1.5.3",
+      "threadpoolctl": "3.6.0",
+      "pytest": "9.0.2",
+      "setuptools": "82.0.1"
+    },
+    "tested_device": "cpu",
+    "cuda_validation_performed": false
+  },
+  "editable_installation_tested": true,
+  "installation_scope": "Editable installation tested in a separate virtual environment using the available pinned scientific dependency stack; dependency wheels were not downloaded during this check.",
+  "internal_document_links_checked": true,
+  "distributed_benchmark_results": false,
+  "distributed_trained_models": false,
+  "new_tep_model_training_performed": false,
+  "fresh_extraction": {
+    "status": "passed",
+    "software_tests_passed": 71,
+    "editable_installation": true,
+    "installed_source_root_confirmed": true,
+    "source_config_dependencies_identical_to_packaged_files": true,
+    "workload_tasks": 7800,
+    "release_checksum_verification": true,
+    "archive_crc_verification": true,
+    "test_scope": "Synthetic execution tests and static planning; no full TEP model fitting.",
+    "dependencies": "Validated with pinned packages already available in the tested CPU environment."
+  }
+}

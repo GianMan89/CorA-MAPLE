@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "source_recordings": 1000,
+  "classes": 5,
+  "channels": 50,
+  "samples_per_recording": 60,
+  "all_processed_arrays_equal_to_csv_rebuild": {
+    "X": true,
+    "y": true,
+    "run_ids": true,
+    "ids": true,
+    "tags": true,
+    "hashes": true
+  },
+  "dataset_sha256": "6b2f61bbe7074f428f8267574c79ac5b09a8e817c2313991d399b37dcffdc354"
+}

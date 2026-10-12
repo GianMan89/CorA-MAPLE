@@ -1,38 +1,55 @@
 {
-  "version": "1.0.0",
-  "static_validation": {
-    "python_files_parsed": 45,
-    "python_grammar": "3.11",
-    "json_files_parsed": 348,
-    "yaml_files_parsed": 11,
-    "package_targets_present": true,
-    "configuration_inheritance_resolved": true,
-    "default_methods_match_manuscript": true,
-    "fixed_eight_view_supervised_augmentation": true,
-    "numeric_upstream_modules_unchanged": true
+  "version": "2.1.0",
+  "protocol": "cora_maple_clean_ft_cv10x5_v2_1",
+  "methods": {
+    "neural": 6,
+    "proposed": 2,
+    "neural_controls": 4,
+    "classical": 5,
+    "total": 11
   },
-  "data": {
-    "raw_csvs": 1000,
-    "raw_files_byte_identical": true,
-    "processed_tensor_byte_identical": true
-  },
-  "reference_results": {
-    "measurements_and_checkpoints_byte_compared": 946,
-    "all_compared_bytes_unchanged": true,
-    "protocol": "reference_cv3"
-  },
-  "execution": {
-    "training_runs": 0,
-    "benchmark_evaluations": 0,
-    "unit_test_runs": 0
+  "training": {
+    "excerpt": {
+      "pretrain_steps": 4000,
+      "finetune_steps": 2400
+    },
+    "full": {
+      "pretrain_steps": 4000,
+      "finetune_steps": 2400
+    },
+    "supervised_objective": "clean_cross_entropy"
   },
   "configured_workload": {
     "cv_repeats": 10,
     "cv_folds": 5,
-    "main_classifier_fits": 2400,
+    "main_classifier_fits": 2200,
     "additional_history_classifier_fits": 2700,
-    "unique_classifier_fits": 5100,
-    "unique_pretraining_tasks": 2950,
-    "unique_tasks": 8050
+    "unique_classifier_fits": 4900,
+    "main_pretraining_tasks": 200,
+    "unique_pretraining_tasks": 2900,
+    "unique_tasks": 7800,
+    "test_conditions_per_classifier": 91
+  },
+  "execution": {
+    "benchmark_state": "not_run",
+    "precomputed_performance_measurements_included": false,
+    "pretrained_weights_included": false
+  },
+  "reproducibility": {
+    "dataset": "data/processed/tep_60min.npz",
+    "scientific_defaults": "configs/base.yaml",
+    "study_grids": [
+      "configs/repeated_cv.yaml",
+      "configs/pool_sizes.yaml"
+    ],
+    "release_checksums": "RELEASE_MANIFEST.json",
+    "software_validation": "validation/RELEASE_VALIDATION.json"
+  },
+  "verification": {
+    "software_tests_passed": 71,
+    "release_manifest": "RELEASE_MANIFEST.json",
+    "dataset_rebuild_verified": true,
+    "trained_benchmark_models": 0,
+    "fresh_extraction_verified": true
   }
 }

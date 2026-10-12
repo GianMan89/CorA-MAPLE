@@ -11,16 +11,14 @@ CONFIG = {
     "primary": "repeated_cv.yaml",
     "pool_sizes": "pool_sizes.yaml",
     "variability_k1": "diagnostics/variability_k1.yaml",
-    "augmentation_diagnostic": "diagnostics/augmentation_diagnostic.yaml",
-    "budget_diagnostic": "diagnostics/budget_diagnostic.yaml",
-    "loss_ablations": "diagnostics/loss_ablations.yaml",
+    "short_schedule": "diagnostics/short_schedule.yaml",
 }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--studies", nargs="+", choices=list(CONFIG), default=["primary", "pool_sizes"])
-    parser.add_argument("--workspace", default="runs/tep_cv10x5")
+    parser.add_argument("--workspace", default="runs/tep_cv10x5_cleanft_v2_1")
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--threads", type=int, default=1)

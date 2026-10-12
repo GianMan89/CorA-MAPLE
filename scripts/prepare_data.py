@@ -29,7 +29,7 @@ def prepare(source:Path,dest:Path,observation_samples:int=60)->dict:
         import re
         match=re.findall(r'(?:run|timeseries_)(\d+)',file.stem)
         if len(match)!=1:raise ValueError(f'Unknown recording ID: {file}')
-        rows.append(dict(id='tep/'+str(file.relative_to(folder)),label=file.parent.name,run=int(match[0]),hash=hashlib.sha256(x.tobytes()).hexdigest(),events=int(np.count_nonzero(diff)+x[:,0].sum()),onsets=int((diff>0).sum()+x[:,0].sum()),active_tags=int(x.max(1).sum())))
+        rows.append(dict(id='tep/'+file.relative_to(folder).as_posix(),label=file.parent.name,run=int(match[0]),hash=hashlib.sha256(x.tobytes()).hexdigest(),events=int(np.count_nonzero(diff)+x[:,0].sum()),onsets=int((diff>0).sum()+x[:,0].sum()),active_tags=int(x.max(1).sum())))
         xs.append(x)
     if not xs:raise ValueError('No TEP source CSVs.')
     t=pd.DataFrame(rows)

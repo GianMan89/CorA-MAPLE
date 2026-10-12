@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "Please cite this repository when using the code, data snapshot, or experiments."
 title: "CorA-MAPLE: Corruption-Aware Pretraining for Robust and Label-Efficient Offline Alarm Flood Classification"
 type: software
-version: 1.0.0
-date-released: 2026-10-08
+version: 2.1.0
+date-released: 2026-10-11
 repository-code: "https://github.com/GianMan89/CorA-MAPLE"
 authors:
   - family-names: Manca

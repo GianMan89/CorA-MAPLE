@@ -23,3 +23,20 @@ def predict_baseline(model, X):
         # Retain native SVC decisions; do not introduce Platt calibration at k=1.
         return model.clf_.predict(model.coactivation_features(X))
     return model.predict(X)
+
+
+def predict_baseline_valid(model, X, lengths):
+    """Use exactly the retained samples, never zero padding, in classical features.
+
+    Core feature extractors and classifier implementations remain unchanged.
+    Equal-length subbatches are grouped for normal vectorized baseline inference.
+    """
+    import numpy as np
+    lengths = np.asarray(lengths, dtype=int)
+    if X.ndim != 3 or lengths.shape != (len(X),) or np.any(lengths < 1) or np.any(lengths > X.shape[-1]):
+        raise ValueError("Invalid observation lengths")
+    result = np.empty(len(X), dtype=np.int16)
+    for length in np.unique(lengths):
+        idx = np.flatnonzero(lengths == length)
+        result[idx] = predict_baseline(model, X[idx, :, :length])
+    return result

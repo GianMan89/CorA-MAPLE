@@ -1,1 +1,0 @@
-dataset,k,fold,seed,perturbation,contrast,clean_difference,auc_difference,f1_at_max_severity_difference,drop_at_max_severity_difference

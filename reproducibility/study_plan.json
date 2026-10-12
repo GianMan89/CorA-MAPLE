@@ -1,0 +1,29 @@
+{
+  "primary": {
+    "tasks": {
+      "pretrain": 200,
+      "fit": 1200,
+      "baseline": 1000
+    },
+    "additional_tasks": {
+      "pretrain": 200,
+      "fit": 1200,
+      "baseline": 1000
+    },
+    "shared_tasks": 0
+  },
+  "pool_sizes": {
+    "tasks": {
+      "pretrain": 2800,
+      "fit": 2800,
+      "baseline": 0
+    },
+    "additional_tasks": {
+      "pretrain": 2700,
+      "fit": 2700,
+      "baseline": 0
+    },
+    "shared_tasks": 200
+  },
+  "unique_tasks": 7800
+}

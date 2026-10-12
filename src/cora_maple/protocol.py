@@ -12,7 +12,7 @@ from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedGroupKFol
 from filelock import FileLock
 from afc_excerpt_ssl.data import Dataset, load_processed, nested_labels
 from .common import atomic_json, digest, file_hash, seed_from, source_hash, environment
-from .config import METHODS, BASELINES, data_path, validate_config
+from .config import METHODS, BASELINES, data_path, validate_config, pretraining_method, training_settings
 
 
 def partitions(data: Dataset, cv: dict) -> list[dict]:
@@ -84,7 +84,7 @@ def build_plan(cfg: dict, data: Dataset, context_id: str) -> dict:
                         if method in BASELINES or not METHODS[method]["pretrain"]:
                             continue
                         pretrain_ids[method] = add({
-                            "kind": "pretrain", "context": context_id, "method": method,
+                            "kind": "pretrain", "context": context_id, "method": pretraining_method(method),
                             "repeat": r, "fold": f, "model_rep": model_rep,
                             "pool": pool_tag, "pool_draw": pool_draw,
                             "pool_size": len(ssl), "ssl_indices": ssl, "initialization_seed": init_seed,

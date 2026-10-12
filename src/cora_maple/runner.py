@@ -77,15 +77,15 @@ def run_task(workspace_s: str, cfg: dict, task: dict, part: dict, device: str, t
                         raise RuntimeError("Pretraining dependency has not completed")
                     model = fit_classifier(data.X[labels], data.y[labels], len(data.classes), cfg, task,
                                            directory, encoder_path, device, threads)
-                    predict = lambda X: predict_neural(model, X, device, cfg["test"]["inference_batch"])
+                    predict = lambda X, lengths: predict_neural(model, X, device, cfg["test"]["inference_batch"], lengths)
                 else:
                     import joblib
-                    from .baselines import make_baseline, predict_baseline
+                    from .baselines import make_baseline, predict_baseline_valid
                     model = make_baseline(task["method"], cfg["baselines"], task["initialization_seed"])
                     model.fit(data.X[labels], data.y[labels])
                     # Joblib is for trusted, locally generated models only.
                     joblib.dump(model, directory / "baseline.joblib", compress=3)
-                    predict = lambda X: predict_baseline(model, X.astype(np.float32))
+                    predict = lambda X, lengths: predict_baseline_valid(model, X.astype(np.float32), lengths)
                     atomic_json(directory / "training.json", {"seconds": time.perf_counter() - start, "labelled_recordings": len(labels)})
                 atomic_json(directory / "model_info.json", {"classes": data.classes.tolist(),
                     "channels": data.tags.tolist(), "observation_samples": cfg["data"]["observation_samples"],
@@ -94,16 +94,16 @@ def run_task(workspace_s: str, cfg: dict, task: dict, part: dict, device: str, t
                 with np.load(cache_path, allow_pickle=False) as cache:
                     y = cache["y"]
                     predictions, rows = [], []
-                    for key, X in zip(cache["conditions"], cache["X"]):
+                    for key, X, lengths in zip(cache["conditions"], cache["X"], cache["lengths"]):
                         op, severity, draw = str(key).split("|")
-                        predicted = np.asarray(predict(X), dtype=np.int16)
+                        predicted = np.asarray(predict(X, lengths), dtype=np.int16)
                         if predicted.shape != y.shape or not np.isin(predicted, np.arange(len(data.classes))).all():
                             raise AssertionError("Invalid predicted classes/shape")
                         predictions.append(predicted)
                         rows.append({"condition": str(key), "operator": op, "severity": float(severity), "draw": int(draw),
                                      **score_predictions(y, predicted, len(data.classes))})
                     np.savez_compressed(directory / "predictions.npz", predictions=np.stack(predictions),
-                                        conditions=cache["conditions"], y=y, ids=cache["ids"], classes=cache["classes"])
+                                        conditions=cache["conditions"], y=y, ids=cache["ids"], classes=cache["classes"], lengths=cache["lengths"])
                     pd.DataFrame(rows).to_csv(directory / "metrics.csv", index=False)
                 atomic_json(directory / "evaluation.json", {"test_cache": str(cache_path.relative_to(workspace)),
                     "test_cache_sha256": file_hash(cache_path), "n_test": len(part["test"]), "n_conditions": len(rows)})

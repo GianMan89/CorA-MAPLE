@@ -20,7 +20,8 @@ def fake_config(tmp_path):
     cfg['data'].update(path=str(path),expected_recordings=100,expected_channels=2)
     cfg['cv'].update(n_repeats=2,n_splits=2)
     cfg['test'].update(severities=[0.,.3],draws=1)
-    cfg['study'].update(name='mock_only',kind='diagnostic',methods=['scratch','scratch_aug','cora_maple_excerpt'],label_budgets=[1])
+    cfg['reporting']['headline_severity']=.3
+    cfg['study'].update(name='mock_only',kind='diagnostic',methods=['maple_excerpt','maple_full','cora_maple_excerpt'],label_budgets=[1])
     return cfg
 
 
@@ -31,7 +32,7 @@ def test_prepare_and_report_fail_closed_without_training(tmp_path,monkeypatch):
     monkeypatch.setattr(learn,'fit_classifier',forbidden)
     cfg=fake_config(tmp_path); work=tmp_path/'work'
     plan=prepare(cfg,work)
-    assert plan['counts']=={'pretrain':4,'fit':12,'baseline':0}
+    assert plan['counts']=={'pretrain':12,'fit':12,'baseline':0}
     assert not (work/'tasks').exists()
     assert not (work/'cache').exists()
     with pytest.raises(RuntimeError,match='incomplete'): report(work,'mock_only')
@@ -55,11 +56,11 @@ def test_resume_cache_and_aggregation_with_mocked_training(tmp_path,monkeypatch)
         return object()
     monkeypatch.setattr(learn,'pretrain_model',pretrain)
     monkeypatch.setattr(learn,'fit_classifier',fit)
-    monkeypatch.setattr(learn,'predict_neural',lambda model,X,device,batch_size:np.zeros(len(X),dtype=np.int16))
+    monkeypatch.setattr(learn,'predict_neural',lambda model,X,device,batch_size,lengths=None:np.zeros(len(X),dtype=np.int16))
     cfg=fake_config(tmp_path);work=tmp_path/'work'
     outcome=run_study(cfg,work)
     assert outcome['complete']
-    assert calls=={'pretrain':4,'fit':12}
+    assert calls=={'pretrain':12,'fit':12}
     assert len(list((work/'cache/test').glob('*.npz')))==4
     previous=dict(calls)
     assert run_study(cfg,work)['newly_executed_tasks']==0
@@ -72,5 +73,5 @@ def test_resume_cache_and_aggregation_with_mocked_training(tmp_path,monkeypatch)
 def test_new_workspace_required_after_configuration_change(tmp_path):
     cfg=fake_config(tmp_path);work=tmp_path/'work'
     prepare(cfg,work)
-    cfg['training']['pretrain_steps']+=1
+    cfg['training']['schedules']['excerpt']['pretrain_steps']+=1
     with pytest.raises(ValueError,match='different source/data/protocol'): prepare(cfg,work)

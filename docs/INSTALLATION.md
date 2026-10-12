@@ -1,63 +1,85 @@
-# Installation and execution environments
+# Installation, devices and progress
 
-Run from a clone or extracted repository so configurations, data and archived
-results are available. An editable install provides the `cora-maple` entry point.
-Python 3.13 is the default CI environment; Python 3.11 and 3.12 are also compatible
-with the declared dependency versions.
+A fresh **Python 3.13** environment is the documented default. The project code
+supports Python >=3.11 and <3.15, subject to availability of the pinned scientific
+wheels. Python 3.9 or older is not supported. Do not downgrade pip to work around an
+old interpreter. `python --version` and `py -0p` identify Windows interpreter choices.
 
-## CPU
+## Windows / CPU
 
-```bash
+```powershell
+py -3.13 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
 python -m pip install -r requirements-cpu.txt
 python -m pip install -e . --no-deps
 ```
 
-The file pins PyTorch 2.10.0 and the scientific Python dependencies. Linux and
-Windows use the official CPU wheel; macOS uses the standard wheel.
+`requirements-cpu.txt` installs PyTorch 2.10.0 CPU plus exact scientific dependency
+versions. On macOS it selects the standard PyTorch distribution. Run from the
+repository root, or set `CORA_MAPLE_ROOT` to that directory when using an installed
+package elsewhere. Do not move the data after preparing a workspace.
 
-## NVIDIA GPU
+## NVIDIA CUDA
 
-For example, for the PyTorch CUDA 12.6 wheel:
+Install a PyTorch 2.10.0 CUDA wheel compatible with the host driver using the
+PyTorch installation instructions, then install `requirements.txt` and the editable
+project without replacing PyTorch with the CPU lock:
 
-```bash
+```powershell
 python -m pip install -r requirements.txt
-python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cu126
 python -m pip install -e . --no-deps
-python scripts/run_studies.py --workspace runs/tep_cv10x5_cuda --device cuda --workers 1
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 ```
 
-PyTorch publishes additional 2.10.0 CUDA builds at
-https://pytorch.org/get-started/previous-versions/ . Use a build compatible with
-the local driver. MPS execution is not an experiment configuration in this release.
+Use `--device cuda --workers 1` or `--device cuda:0 --workers 1`. Multiple GPU
+invocations may partition work with `--only-repeat`/`--only-fold` and distinct
+CUDA indices. Tasks and test caches are protected by file locks. Do not start
+multiple unfiltered invocations against the same entire task set.
 
-## Parallel work and resumption
+For CPU use `--workers 4 --threads 1` as an example, adjusting workers to physical
+cores and memory. Each worker loads a dataset and task-local model; shared test
+caches avoid regenerating every corruption for every classifier. Spawn is used
+on every platform. GPU execution uses one process per invocation; observed runtime
+hardware and package versions are saved with the workspace.
 
-`--workers` controls concurrent independent tasks; `--threads` controls numerical
-threads per worker. Task IDs include the full experiment context, so different
-studies in the same workspace reuse only identical tasks. Process spawning is used
-for Windows compatibility. Locks protect cache generation and task output.
+The runner requests deterministic PyTorch operations, disables TF32 and CUDA
+attention kernels incompatible with deterministic operation, and uses separate RNG
+streams. CPU/GPU or library-version changes can still change floating-point results;
+these runs must use different workspaces. No GPU performance claim is made from CPU
+software tests.
 
-Completed files are hashed. Failed or interrupted tasks are rerun from their
-recorded seeds. Resumption is at task boundaries, not individual optimizer updates.
-Different source/data/configuration hashes or incompatible environments are rejected
-within an existing workspace. Use distinct workspace names for distinct scientific
-configurations or CPU/GPU environments.
+## Monitoring
 
-For manual multi-GPU sharding, invoke one worker per GPU and select different
-`--only-repeat` values while keeping the workspace and dependency versions identical.
-The execution record stores device family and worker thread policy.
+From a second PowerShell terminal with the same environment activated:
 
-## Determinism
+```powershell
+while ($true) {
+    Clear-Host
+    Get-Date
+    python -m cora_maple status --workspace runs/tep_cv10x5_cleanft_v2_1 --study primary
+    Start-Sleep -Seconds 60
+}
+```
 
-Seeds cover source splitting, label and pool sampling, model initialization,
-crop selection, masking, perturbations and dropout. Deterministic PyTorch operations
-are requested. Exact equality across platforms or PyTorch releases is not assumed.
-The package records Python, dependency versions, platform and device in each
-workspace. See the PyTorch reproducibility documentation cited in `PROTOCOL.md`.
+Use `--study pool_sizes` for the history study. Ctrl+C in the monitoring terminal
+does not stop training in another terminal. The task percentage counts completed
+jobs, not estimated wall time: E/F and SSL/supervised jobs differ in cost. The last
+step/loss is written in task-local `progress.json`; after an interruption that
+record can be stale. Runtime exceptions are retained in `failure.json`.
 
-## Output size
+Resume with the same run command. Complete tasks are checked and reused, while an
+interrupted optimization task restarts from its recorded seed. This is task-level
+resume, not optimizer checkpoint restart.
 
-Model checkpoints and paired test caches are stored in the selected workspace.
-Caches use compressed uint8 alarm-state tensors. The `runs/` directory is excluded
-from Git tracking. Publication asset exports contain the compact summaries,
-tables and vector figures without duplicating caches.
+## Tests
+
+```powershell
+python -m pip install pytest==9.0.2
+python -m pytest -q
+```
+
+Tests include short synthetic training through the six-condition neural grid, validity
+masking, reconstruction edge cases, deterministic pairing, full-pool reuse, metadata,
+report completeness, and numerical prediction replay. They do not run the 1,000-source
+TEP benchmark. The released validation record states the actual tested environment.

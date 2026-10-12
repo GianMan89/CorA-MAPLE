@@ -10,7 +10,7 @@ from cora_maple.protocol import prepare
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace", default="runs/tep_cv10x5")
+    parser.add_argument("--workspace", default="runs/tep_cv10x5_cleanft_v2_1")
     args = parser.parse_args()
     workspace = Path(args.workspace).resolve()
     seen, report = set(), {}

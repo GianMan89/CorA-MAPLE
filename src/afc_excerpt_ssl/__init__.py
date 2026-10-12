@@ -1,1 +1,1 @@
-"""Alarm-data and encoder primitives shared with archived checkpoints."""
+"""Alarm-state data handling and length-aware patch encoders."""

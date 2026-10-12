@@ -15,7 +15,7 @@ from cora_maple.runner import completed, task_directory
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--workspace', type=Path, default=Path('runs/tep_cv10x5'))
+    parser.add_argument('--workspace', type=Path, default=Path('runs/tep_cv10x5_cleanft_v2_1'))
     parser.add_argument('--study', default='primary')
     parser.add_argument('--device', default='cpu')
     args = parser.parse_args()
@@ -39,11 +39,11 @@ def main() -> None:
         if file_hash(cache_path) != evaluation['test_cache_sha256']:
             raise ValueError(f'Changed test cache: {cache_path}')
         with np.load(cache_path, allow_pickle=False) as cache, np.load(directory / 'predictions.npz', allow_pickle=False) as saved:
-            for key in ('conditions', 'ids', 'y', 'classes'):
+            for key in ('conditions', 'ids', 'y', 'classes', 'lengths'):
                 if not np.array_equal(cache[key], saved[key]):
                     raise ValueError(f'Prediction/cache identity mismatch: {ident} / {key}')
             for index, observation in enumerate(cache['X']):
-                actual = predict_neural(model, observation, args.device, cfg['test']['inference_batch'])
+                actual = predict_neural(model, observation, args.device, cfg['test']['inference_batch'], cache["lengths"][index])
                 if not np.array_equal(actual, saved['predictions'][index]):
                     raise ValueError(f'Replay differs: {ident} / {cache["conditions"][index]}')
                 conditions += 1

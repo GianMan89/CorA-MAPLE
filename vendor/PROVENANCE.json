@@ -1,6 +1,6 @@
 {
-  "source": "user-provided afc-robustbench-main.zip",
+  "source": "AFC-RobustBench source archive, afc-robustbench-main.zip",
   "archive_sha256": "f6e11bc32ac57447cd18250f24dca351b83bfe8111498d6a3aef855ef079ec76",
   "repository": "https://github.com/GianMan89/afc-robustbench",
-  "note": "Code vendored unchanged. The supplied ZIP has no .git metadata; commit identity is not inferred. All main experiment perturbations call upstream operators and trace repair."
+  "note": "Attributed event primitives and five classical classifiers are retained with their original notices. The archive contains no Git metadata; commit identity is not inferred. The current experiment adapter in src/cora_maple/transforms.py supplies known-initial-state reconstruction and validity-aware state transformations."
 }

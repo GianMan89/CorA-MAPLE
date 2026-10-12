@@ -40,3 +40,17 @@ def test_mc_draws_are_not_independent_replicates():
     *_,b=aggregate_frames(pd.concat([rows]*10,ignore_index=True))
     assert np.allclose(a.macro_f1_mean,b.macro_f1_mean)
     assert np.allclose(a.macro_f1_sd,b.macro_f1_sd)
+
+
+def test_load_study_rejects_scope_filtering(tmp_path):
+    import json
+    from cora_maple.report import load_study
+    from cora_maple.config import load_config, ROOT, PROTOCOL
+    folder=tmp_path/'studies'/'primary';folder.mkdir(parents=True)
+    cfg=load_config(ROOT/'configs/repeated_cv.yaml')
+    original={'protocol':PROTOCOL,'tasks':{'a':{'id':'a','kind':'fit','method':'outside_scope'}},'evaluations':['a']}
+    (folder/'plan.json').write_text(json.dumps(original))
+    (folder/'config.json').write_text(json.dumps(cfg))
+    with pytest.raises(ValueError,match='unsupported'):
+        load_study(tmp_path,'primary')
+    assert json.loads((folder/'plan.json').read_text())==original

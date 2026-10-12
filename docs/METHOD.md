@@ -1,77 +1,113 @@
-# Method implementation
+# Method and controlled ablations
 
-## Input representation
+## Representation and architecture
 
-A source observation is a binary array of shape channels × time. All recordings
-use the same channel map and sampling interval. An ACT transition starts activity
-and an RTN transition ends it under the event-reconstruction convention. For the
-TEP evaluation the selected window has 50 channels and 60 one-minute samples.
-The array representation is not restricted to these dimensions, although the
-provided experiment configurations are TEP-specific.
+An input X has shape C × T, with binary active/inactive alarm states on a fixed
+sample grid. Alarm-channel identity/order and sampling interval are consistent
+between pretraining and downstream use. Each patch contains q=3 consecutive samples
+from every channel. A linear Cq→96 map and sinusoidal relative-to-input positions
+feed a bidirectional three-layer, four-head pre-normalized Transformer (FFN 192,
+GELU, dropout 0.1), followed by LayerNorm. Mean and elementwise maximum pooling
+are concatenated into 192 features and passed to a new linear softmax classifier.
+For C=50, K=5 the encoder has 239,136 parameters and the classifier 240,101.
 
-## Excerpt and full-episode input selection
+E uniformly samples one length per minibatch from {15,30,45,60}; each member samples
+a source with replacement and a valid start uniformly. F uses complete supplied
+60-sample episodes. E requires no flood labels or boundary detector, but the current
+benchmark supplies only curated fault episodes. All input samples are retained.
 
-The E variant selects a common excerpt length for each minibatch, then samples
-source recordings and starts uniformly with replacement. Empty inputs remain
-eligible. F uses the complete observation from each sampled source. Different
-minibatches may have different lengths; lengths must be divisible by the patch
-size. No flood selector is called during excerpt sampling.
+Validity masks identify unavailable padded samples. Attention ignores fully padded
+patches, a partial final patch has its missing cells set to zero, mean pooling is
+weighted by real samples/patch width, and maximum pooling excludes entirely padded
+patches. Reconstruction and latent losses exclude missing cells/patches. Input
+length can vary across batches and, where needed, within batches. Padding is never
+interpreted as a real return-to-normal interval.
 
-## Encoder
+## Self-supervised learning
 
-Each non-overlapping three-sample patch contains values from all channels. Its
-flattened Cq values are linearly projected to 48 dimensions. During pretraining,
-30% of patch vectors (rounded, at least one) are replaced by a shared learned mask
-vector. Sine–cosine positions are added, then two pre-normalized, bidirectional
-Transformer layers with four heads, GELU, feed-forward width 96 and dropout 0.1
-produce features followed by final layer normalization. Position vectors are
-extended when more than the initially allocated number of patches is needed.
+The teacher begins as a copy of the student, with no gradient updates, masking,
+corruption or dropout. The student sees event/state-corrupted and masked views
+(mask ratio 0.3, rounded with a minimum of one patch), independently of whether
+an unchanged input was sampled. A 96→192→96 GELU predictor maps student features
+to teacher targets; its output has affine-free LayerNorm.
 
-## Student and teacher
+The loss is mean squared latent-prediction error over all real patch positions,
+plus 0.50 balanced binary cross-entropy reconstruction and 0.10 variance penalty.
+Active/inactive targets each receive half of the reconstruction weight when both
+are present; an empty class term contributes zero. The population standard
+deviation of each mean-pooled feature is sqrt(var + 1e-4), penalized below 0.5.
+The teacher follows EMA coefficient 0.995 after every optimizer update. No full
+VICReg covariance penalty or KL consistency term is used.
 
-The reference input is the recorded observation. A student sees the event-corrupted
-view with patch masking; a teacher processes the reference without corruption,
-masking or dropout. The teacher starts as a parameter copy and is updated only by
-an exponential moving average with coefficient 0.99. Teacher targets are evaluated
-without gradients.
+Corrupted pretraining samples false_full, missing_full or timing uniformly, with
+20% identity views and severity uniformly 0.05–0.30. Delay is absent because a
+cropped prefix would destroy student/teacher patch-coordinate alignment. Uncorrupted
+pretraining uses the same masking, losses, architecture and matched update
+schedule without experimental corruption. Its source pool is identical to its
+corrupted counterpart.
 
-The predictor is Linear(48,96), GELU, Linear(96,48), followed by layer normalization
-without learned affine parameters. The decoder is Linear(48,Cq). Pretraining uses:
+## Classifier training
 
-1. Mean squared error between predicted and reference features at **all** patches.
-2. Binary cross-entropy reconstruction of **all** reference cells, with equal total
-   weight for active and inactive targets. Empty terms contribute zero.
-3. A hinge penalty on the feature standard deviations of mean-pooled student
-   outputs, using divisor B, stabilizer 1e-4, and target standard deviation 0.5.
+Every method minimizes clean cross-entropy on the same labelled original episodes:
 
-The full objective is latent loss + 0.25 reconstruction loss + 0.10 variance loss.
-MAPLE-E/F remove event corruption but retain masking and all loss terms. Recon-E
-uses reconstruction alone. The auxiliary components are not used at inference.
+    L_cls = CE(classifier(X), y).
 
-## Supervised stage
+The student encoder and newly initialized linear classification head are updated
+jointly. No supervised corruption, patch masking, extra labelled examples,
+pseudo-labels, or consistency penalty are used. Dropout remains enabled during
+training and disabled at inference. 
 
-A fresh linear classifier receives the concatenated mean and elementwise maximum
-of the encoder's patch outputs (96 features). The encoder and classifier are
-fine-tuned jointly with cross-entropy. Labels are available only in this stage.
-All pretrained methods fine-tune on complete, unmasked, experimentally uncorrupted
-observations. Scratch uses the same encoder and classifier without pretraining.
-Scratch+Aug additionally samples from eight pre-generated event-corrupted views
-per labelled recording. This bank is not refreshed during fine-tuning.
+At inference, exactly one class is returned per supplied observation. Delayed test
+windows are shorter real observations, not full observations padded with trustworthy
+zeros. Delay is never sampled in either training stage under this release.
 
-## Mapping to code and configurations
+## Optimizer and fixed schedules
 
-| Element | Implementation |
-|---|---|
-| Input loading, duplicate checks, nested label subsets | `src/afc_excerpt_ssl/data.py` |
-| Patch encoder, classifier, EMA teacher | `src/afc_excerpt_ssl/models.py` |
-| Registered paper names and ablations | `src/cora_maple/config.py` |
-| Training objectives and optimizers | `src/cora_maple/learning.py` |
-| ACT/RTN conversion, corruption and paired tests | `src/cora_maple/transforms.py` and `vendor/afc_robustness/` |
-| CV source assignments and seed pairing | `src/cora_maple/protocol.py` |
-| Checkpointed jobs and resumable orchestration | `src/cora_maple/runner.py` |
-| Statistics, paired comparisons and LaTeX export | `src/cora_maple/report.py` |
-| Explicit hyperparameters | `configs/base.yaml` |
+| Setting | E | F |
+|---|---:|---:|
+| SSL updates | 4,000 | 4,000 |
+| Supervised updates | 2,400 | 2,400 |
+| SSL batch | 32 | 32 |
+| Supervised batch | min(32,kK) | min(32,kK) |
+| SSL peak LR / weight decay | 5e-4 / 5e-4 | Same |
+| Fine-tuning encoder/head peak LR | 3.5e-4 / 1e-3 | Same |
+| Fine-tuning weight decay | 0.01 | Same |
+| Warmup SSL / supervised | 80 / 50 updates | Same |
+| Cosine minimum fraction | 0.10 of peak | Same |
+| AdamW betas / epsilon | (0.9,0.999) / 1e-8 | Same |
+| Gradient norm limit | 1.0 | Same |
 
-AdamW uses learning rate 1e-3, weight decay 1e-4, betas (0.9,0.999), epsilon 1e-8,
-and gradient-norm clipping at one. Pretraining and supervision have 800 and 400
-updates respectively. Checkpoint selection uses the final update.
+The cosine schedule spans each arm's prescribed duration. Longer duration thus
+changes both update count and decay horizon. The final checkpoint is evaluated;
+there is no score-dependent early stopping. Schedule-matched ablations share all
+settings other than the pretraining condition listed below.
+
+## Pretraining comparison registry
+
+| Configuration key, for `excerpt` or `full` | SSL | Supervised |
+|---|---|---|
+| `scratch_<scope>` | None | Clean |
+| `maple_<scope>` | Uncorrupted masked SSL | Clean |
+| `cora_maple_<scope>` | Corrupted masked SSL | Clean |
+
+Scratch E/F are matched references for the two input scopes. Neither samples
+excerpts, because neither performs pretraining. With the same supervised schedules,
+input data and paired random seeds their predictions are identical; the two entries
+must not be interpreted as independent scientific replications.
+
+Each split needs four full-pool SSL fits: clean/corrupted × excerpt/full. The four
+label budgets reuse these same pretrained weights, with a fresh head and separate
+supervised optimization for each budget. Initializations, head seeds, source-order,
+masking, corruption, and dropout streams are paired across conditions where relevant.
+Source splitting precedes any input extraction or fitting. Exact source roles and
+label/pool selections are stored in the workspace.
+
+The comparison separates the effect of unlabelled representation learning (MAPLE
+versus Scratch) from corruption-aware pretraining (CorA-MAPLE versus MAPLE). It does
+not test supervised augmentation. This is a pretraining comparison, not an evaluation of supervised augmentation.
+
+Classical core code remains unmodified. EAC uses attenuation 0.01, normalized
+features, event-index time, Euclidean distance; MBW uses the original fixed L2
+logistic configuration; WDI retains the original strict frequency >0.5 threshold;
+JAC retains its original set comparison; ACM uses native SVC decisions without
+probability calibration. Each method uses only its selected labelled records.

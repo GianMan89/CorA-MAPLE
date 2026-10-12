@@ -32,7 +32,7 @@ def test_exact_ten_times_five_balanced_splits(primary):
         assert np.all(np.bincount(data.y[p['train']]) == 160)
         assert np.all(np.bincount(data.y[p['test']]) == 40)
         assert not set(p['train']) & set(p['test'])
-    assert plan['counts'] == {'pretrain': 250, 'fit': 1400, 'baseline': 1000}
+    assert plan['counts'] == {'pretrain': 200, 'fit': 1200, 'baseline': 1000}
 
 
 def test_nested_labels_and_paired_seeds(primary):
@@ -62,7 +62,7 @@ def test_nested_labels_and_paired_seeds(primary):
 
 def test_fresh_label_and_training_seeds_between_splits(primary):
     _, _, plan = primary
-    t = [t for t in plan['tasks'].values() if t['kind'] == 'fit' and t['method'] == 'scratch' and t['k'] == 1]
+    t = [t for t in plan['tasks'].values() if t['kind'] == 'fit' and t['method'] == 'maple_excerpt' and t['k'] == 1]
     assert len({x['initialization_seed'] for x in t}) == 50
     assert len({tuple(x['label_indices']) for x in t}) > 40
 
@@ -80,7 +80,7 @@ def test_pools_are_nested_and_not_label_anchored(primary):
     assert pool_indices(p, 10, 0, cfg['cv']) != pool_indices(p, 10, 1, cfg['cv'])
 
 
-def test_full_endpoint_reuses_only_new_protocol(primary):
+def test_full_endpoint_reuses_matching_primary_tasks(primary):
     _, data, plan = primary
     cfg = load_config(ROOT / 'configs/pool_sizes.yaml')
     pool_plan = build_plan(cfg, data, 'synthetic_context')
@@ -123,7 +123,7 @@ def test_duplicate_inputs_never_cross_roles(primary):
 def test_invalid_settings_fail_before_execution(primary, change):
     cfg = deepcopy(primary[0])
     if change == 'patch': cfg['model']['patch_size'] = 7
-    if change == 'probabilities': cfg['corruption']['probabilities'] = [.2,.2,.2]
+    if change == 'probabilities': cfg['corruption']['pretraining']['probabilities'] = [.2,.2,.2]
     if change == 'pool': cfg['study']['pool_sizes'] = [0]
     if change == 'batch': cfg['training']['pretrain_batch'] = 1
     with pytest.raises(ValueError): validate_config(cfg)

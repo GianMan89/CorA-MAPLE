@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cora-maple"
-version = "1.0.0"
+version = "2.1.0"
 description = "Corruption-aware self-supervised pretraining for offline alarm flood classification"
 readme = "README.md"
 requires-python = ">=3.11,<3.15"

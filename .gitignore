@@ -11,4 +11,8 @@ runs/
 # Exported paper assets and local audit reports are created by the CLI.
 paper/generated/
 validation/local/
-# The archived measured results under results/reference_cv3 are tracked.
+# Experiment measurements are written to the workspace; only validated exports belong under results.
+
+# Notebook/editor/OS caches
+.ipynb_checkpoints/
+Thumbs.db

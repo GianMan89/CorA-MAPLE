@@ -1,115 +1,121 @@
-# Experimental protocol
+# Frozen clean-supervision protocol
 
-## Scope
+Protocol identifier: `cora_maple_clean_ft_cv10x5_v2_1`.
+Scientific defaults are in `configs/base.yaml`; study grids are in
+`configs/repeated_cv.yaml` and `configs/pool_sizes.yaml`. Full resolved configurations,
+code hashes and dataset hashes are written before model construction.
 
-The analysis is offline: one class prediction is produced from each complete
-60-sample observation. There is no renewed flood detection, online prefix averaging
-or early-decision metric. Values beyond the first hour are absent from the bundled
-data. All methods use the same channels, observation window, class labels and
-perturbed test inputs.
+## Source-level roles
 
-The default identifier is `cora_maple_cv10x5_v1`. Its two studies are `primary`
-(`configs/repeated_cv.yaml`) and `pool_sizes` (`configs/pool_sizes.yaml`).
+Five-fold CV is repeated ten times with stratification by fault class. Each split
+contains 800 training and 200 held-out source recordings (160/40 per class).
+Splitting precedes excerpt extraction and no held-out source enters either training
+stage. Exact duplicate matrices are grouped instead of crossing source roles;
+all 1,000 current matrices are unique. Each source appears exactly once as a test
+recording within each repetition. Repetitions reuse the same underlying 1,000
+recordings.
 
-## Repetition and splitting
+Nested labelled sets contain k=1,2,5,20 records per class and are shared by all
+methods within a split. The same initialization, head, batch and dropout seed
+identifiers are paired across pretraining controls where meaningful. These are
+one initialization and one label selection per condition per split, not ten
+independent initialization replications on a fixed train/test set.
 
-`RepeatedStratifiedKFold(n_splits=5, n_repeats=10, random_state=2027)` independently
-randomizes five-fold partitions in each repetition. Every source is tested once
-per repetition. Splitting occurs at complete-recording level before excerpts,
-label selection, model fitting or test-corruption generation. Exact duplicate
-inputs are kept together if supplied; conflicting labels for duplicate inputs are
-rejected. The packaged TEP data contain 1,000 unique first-hour observations.
+## Full-pool comparison
 
-Each split has 800 training sources and 200 test sources, with 160/40 sources per
-class. Label budgets are 1, 2, 5 and 20 unique observations per class. Larger budgets
-contain the smaller labelled subsets. Source IDs are shared across methods.
+Six neural conditions (three within E, three within F) and five classical methods
+are evaluated at four label budgets:
 
-A repetition is not ten initializations of a fixed fold partition: partitions,
-label selections and training random streams change between repetitions. There is
-one training initialization for each method and labelled-subset condition in each
-split. Neural encoder and classifier-head initializations are paired between
-methods within a split. Separate seed streams control crops, masks, event corruption,
-supervised sample order and dropout. All seeds and source roles are serialized.
+- 50 splits × 6 neural methods × 4 label budgets = **1,200 neural classifier fits**.
+- 50 splits × 5 classical methods × 4 label budgets = **1,000 classical fits**.
+- 50 splits × 4 SSL conditions = **200 shared pretraining fits**.
 
-Only the last training checkpoint is evaluated. No inner CV, validation-dependent
-schedule or test-driven checkpoint selection is used.
+Every classifier is trained on clean labelled episodes only. MAPLE and CorA-MAPLE
+within a scope use identical unlabelled sources, architecture, losses and training
+schedules, differing only in corruption exposure during SSL. Scratch has no
+pretraining, but the same architecture and supervised schedule. Each SSL checkpoint
+serves all four label budgets, with newly initialized classifier heads and separate
+fine-tuning. No held-out accuracy, F1 or robustness score controls checkpoint
+selection or the learning-rate schedule.
 
-## Pretraining history
+E and F use the same architecture and **4,000/2,400 pretraining/supervised updates**.
+An E input contains 37.5 samples on average, versus 60 for F, so cumulative temporal
+exposure differs by a factor of 1.6 at equal updates. The optional `short_schedule`
+diagnostic uses 1,600/900 updates for both scopes in a separate workspace; it is
+not included in the default main run.
 
-The primary experiment uses the complete outer training pool with its class labels
-hidden from pretraining. CorA-MAPLE-F samples full recordings uniformly with
-replacement. CorA-MAPLE-E selects one length from 15, 30, 45 or 60 samples per
-minibatch, then samples sources and valid crop starts uniformly. The crop selector
-does not inspect class labels, alarm-rate thresholds or whether an excerpt is empty.
+## Amount of available history
 
-Available history is `N_U * T * dt / 60` hours for equal-length recordings. For the
-packaged 60-minute observations its numeric value equals `N_U`. Full=800 is an
-available-data budget, not a guarantee of exhaustive visitation. `source_coverage.npz`
-records source draw counts and a union mask over visited time samples. Repeated
-visits contribute to cumulative sampled hours but do not count as new history.
-At 800 updates and batch size 32, full episodes process 25,600 cumulative hours;
-excerpts process 16,000 hours in expectation, counting repeated observations.
+At k=1, CorA-MAPLE-E/F use total pretraining source counts
+`[1,2,5,10,20,50,100,200,400,full]`. These are counts **across all classes**, not
+per-class budgets. Every TEP source contributes one available hour, so H_U=N_U h
+and Full=800 h. Small pools do not have to cover all five classes.
 
-## History-size sensitivity
+Three nested class-blind random source permutations are sampled per split. The
+same pool selections are used by E/F, with no mandatory inclusion of labelled
+training sources. At N_U=1, the pool is precisely one recording; supervised labels
+remain the independently selected five class-balanced recordings.
 
-At fixed k=1, each split has three class-blind random permutations of the outer
-training sources. Prefixes of length 1, 2, 5, 10, 20, 50, 100, 200 and 400 produce
-nested pools. Both proposals share these pools. Labelled examples and initialization
-seeds stay fixed while pool size and pool selection vary. Labelled examples are not
-forced into the pretraining pool, so N_U=1 means one recording in total.
+There are 50 × 2 × 9 × 3 = **2,700 additional pretraining and classifier fits**.
+The full-pool endpoints reuse 100 pretraining tasks and 100 classifier tasks from
+the current primary run. Across both studies this yields **2,900 distinct SSL fits**
+and **4,900 classifier fits**, or **7,800 unique tasks**. The full primary and
+history studies must finish before exporting their manuscript results.
 
-The full-pool endpoint references the matching primary task in the same split. It
-is not fitted or counted three times. No archived three-fold endpoint is used.
+Smaller pools retain the same update schedule and therefore repeat sources more
+frequently. Each pretraining task records available hours, sampled input hours,
+unique source-time coverage, observed source count and per-operator view counts.
+These distinguish available history from cumulative processed data. They do not
+claim a minimum sufficient corpus size.
 
-| Study | Distinct classifiers | Distinct pretraining tasks |
-|---|---:|---:|
-| Primary: 50 splits × 12 methods × 4 label budgets | 2,400 | 250 |
-| Reduced history: 50 × 3 pools × 9 sizes × 2 methods | 2,700 | 2,700 |
-| Full-pool history endpoint | 100 reused | 100 reused |
-| Total unique tasks | 5,100 classifiers | 2,950 pretraining tasks |
+## Test suite and measurement
 
-## Perturbations
+Six published operators are evaluated at severity 0,0.1,0.2,0.3,0.4,0.5. A single
+uncorrupted reference condition and three realizations per operator/positive
+severity yield **91 conditions per classifier**. All models and label/pool budgets
+reuse the same per-source transformed observations and valid-length metadata
+within a split. There is no adaptation using test corruptions.
 
-Training leaves a view unchanged with probability 0.2. Otherwise it samples one
-of missing, spurious or timing corruption uniformly at severity uniform on
-[0.05,0.20]. Masking is independent and still applies to uncorrupted views.
+The primary metric is five-class Macro-F1. Accuracy, per-class predictions,
+clean-to-degraded absolute drops and normalized trapezoidal severity areas are
+also retained. Within each fitted classifier, average the three perturbation
+realizations. For pool studies, average the three pool selections within each
+split. Next average five folds within each repetition, then report the mean and
+sample standard deviation across ten repetition means.
 
-All operators act on reconstructed ACT/RTN notifications, use trace repair and
-return to the same binary-state grid. Missing corruption deletes floor(s*n)
-notifications. Spurious corruption inserts floor(s*n) notifications with uniformly
-sampled tags, types and times. Timing shifts floor(s*n) selected events by a
-uniform displacement up to s*10 minutes, clipped to the observation window.
+Group metrics use equally weighted operator means computed within folds before
+repetition aggregation. The **trained** group contains false_full, missing_full and
+timing, which are sampled only during CorA-MAPLE pretraining. The **test_only** group
+contains late_start, missing and spurious, absent from both stages. The redundant
+pretraining_only group records the stage explicitly in machine-readable output.
+These are operator-balanced diagnostics, not estimates weighted by real-world
+failure prevalence. Raw per-pool and per-draw results prevent this aggregation from
+concealing selection variability.
 
-Three structured tests are outside the pretraining operator distribution. Burst
-insertion samples times around a random centre with a two-minute half-width. Tag
-dropout removes every notification for floor(s*C) sampled channels. Mixed corruption
-applies missing events, repairs, then applies spurious events at the same severity
-relative to the resulting event count. A leading RTN can imply activity at the
-window start under the retained repair convention. Severity is an event-edit or
-channel-loss parameter, not the fraction of state cells altered.
+## Statistical and external validity
 
-The test suite has one clean condition and six operators × three positive severities
-(0.1,0.2,0.3) × three random realizations: 55 conditions per fitted classifier.
-Conditions are shared by every method within a split; changing worker counts does
-not change them. Corruption does not alter ground-truth disturbance classes.
+Hyperparameters are fixed for the configured run, and held-out metrics are not
+used for checkpoint selection, learning-rate adaptation or in-run model selection.
+Repeated CV partitions still reuse the same underlying recordings and do not create
+independent external confirmation. General performance claims require independent
+recordings, process domains, or an appropriate nested validation design. Any
+score-informed change to the configuration must be evaluated as a distinct study.
 
-## Aggregation
+The full-channel false-alarm mechanism is especially identifiable on full TEP
+recordings because every clean first sample is inactive. Channel-forcing, event
+loss and delayed history have distinct physical consequences at the same numeric
+severity. Initial-state-aware reconstruction assumes a reliable snapshot. These
+facts must accompany scientific interpretation of the resulting rankings.
 
-Macro-F1 is computed with the full five-class label list and zero_division=0.
-Reporting first averages perturbation realizations within each classifier and
-then applicable pool selections within each fixed repeat/fold/condition. The five
-fold scores are averaged for each repetition. The final mean and sample SD use
-the ten repetition means. For paired comparisons, method differences are calculated
-on matching folds, labels and corruption conditions before the same aggregation.
+## Optional diagnostics
 
-Per-draw, per-fit, per-split and per-repeat outputs are all retained. SDs describe
-repetition variability and are not independent-fold confidence intervals. The
-same 1,000 sources are reused across repetitions; this does not create 10,000
-independently collected recordings.
+Each has a separate explicit configuration; none is silently selected for better
+scores or substituted for the default protocol.
 
-## Reference documentation
+- `short_schedule`: 1,600/900 updates for both E and F at k=1,20; evaluates training
+  duration relative to the common 4,000/2,400 main schedule.
+- `variability_k1`: crossed label draws and neural seeds (three each), k=1;
+  quantifies the difference between label selection and initialization variability.
 
-- scikit-learn RepeatedStratifiedKFold:
-  https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RepeatedStratifiedKFold.html
-- PyTorch reproducibility:
-  https://docs.pytorch.org/docs/stable/notes/randomness.html
+The latter can reuse the default context in a separately named study if settings
+match, but using a separate workspace keeps its cost and reporting explicit.

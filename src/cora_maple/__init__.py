@@ -1,2 +1,2 @@
-"""Corruption-aware alarm representation learning and repeated-CV evaluation."""
-__version__ = "1.0.0"
+"""CorA-MAPLE reproducible alarm-flood classification."""
+__version__ = "2.1.0"

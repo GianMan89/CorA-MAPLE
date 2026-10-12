@@ -1,0 +1,25 @@
+% Method description; no performance values are embedded.
+Both variants use the same 96-dimensional, three-layer patch Transformer.
+\emph{CorA-MAPLE-E} samples historical excerpts, whereas \emph{CorA-MAPLE-F}
+uses complete unlabelled flood episodes. The student learns from masked and
+corrupted inputs while the moving-average teacher processes the unchanged
+reference. Pretraining combines latent prediction, balanced binary reconstruction,
+and variance regularization, weighted by $1$, $0.50$, and $0.10$, respectively,
+with teacher momentum $0.995$.
+
+After pretraining, the student encoder and a new linear classification head are
+jointly fine-tuned using only clean labelled observations:
+\begin{equation}
+L_{\mathrm{cls}}=-\frac{1}{N_L}\sum_{i=1}^{N_L}\log p_{y_i}(X_i),
+\label{eq:clean_supervised}
+\end{equation}
+where $N_L$ is the number of labelled episodes, $y_i$ is the reference class, and
+$p_{y_i}(X_i)$ is its predicted probability. No experimental corruption or patch
+masking is applied during supervised training.
+
+Full-channel false activation, full-channel loss, and timestamp uncertainty are
+sampled only during corruption-aware pretraining. Delayed observations and missing
+or additional ACT/RTN notifications are reserved for testing. Event reconstruction
+uses the recorded per-channel initial state as an independent snapshot. Delayed
+windows retain explicit valid lengths, excluding padded samples from attention,
+pooling and the classical reference representations.

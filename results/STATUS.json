@@ -1,0 +1,8 @@
+{
+  "version": "2.1.0",
+  "protocol": "cora_maple_clean_ft_cv10x5_v2_1",
+  "complete": false,
+  "state": "not_run",
+  "included_performance_measurements": false,
+  "source": "Execute and audit the primary and pool_sizes studies in a workspace before exporting results."
+}

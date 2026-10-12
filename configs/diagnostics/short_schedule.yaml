@@ -1,0 +1,14 @@
+extends: ../repeated_cv.yaml
+training:
+  schedules:
+    excerpt:
+      pretrain_steps: 1600
+      finetune_steps: 900
+    full:
+      pretrain_steps: 1600
+      finetune_steps: 900
+study:
+  name: short_schedule
+  kind: diagnostic
+  methods: [scratch_excerpt, scratch_full, maple_excerpt, maple_full, cora_maple_excerpt, cora_maple_full]
+  label_budgets: [1, 20]

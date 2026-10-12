@@ -1,0 +1,34 @@
+% Fixed protocol; numerical results come from completed current-protocol runs.
+Both methods use $q=3$, $d=96$, three Transformer layers, four attention heads,
+feed-forward width $192$, dropout $0.1$, and masking ratio $0.3$.
+Both \emph{CorA-MAPLE-E} and \emph{CorA-MAPLE-F} use 4,000 pretraining
+and 2,400 supervised updates. AdamW uses pretraining
+learning rate $5\times10^{-4}$, supervised encoder/head rates $3.5\times10^{-4}$
+and $10^{-3}$, warmup followed by cosine decay, and gradient-norm clipping at one.
+
+The comparison includes \emph{Scratch}, \emph{MAPLE}, and \emph{CorA-MAPLE} for
+both E/F schedules, using no, uncorrupted, and corruption-aware pretraining,
+respectively. All six conditions use clean-only supervised training and identical
+architecture and supervised settings. Scratch-E/F are paired references with
+identical settings and do not perform excerpt or full-episode pretraining. Together with five
+classical baselines and four label budgets, ten repetitions of stratified
+five-fold cross-validation produce $50\times11\times4=2{,}200$ classifier fits.
+Each split reuses four SSL checkpoints across all four labelled adaptation budgets.
+
+The pretraining corruption severity is sampled from $[0.05,0.30]$, with 20\%
+unchanged views. Six published mechanisms are tested at
+$s\in\{0,0.1,0.2,0.3,0.4,0.5\}$ using three paired realizations per positive
+severity: full-channel false activation, full-channel loss, timestamp uncertainty,
+delayed observation, missing notifications, and additional notifications
+\citep{etfa,robustbench}. The first three occur during CorA-MAPLE pretraining;
+the last three are absent from all training. Classical methods and Scratch use
+only the labelled subset, while MAPLE and CorA-MAPLE additionally use the unlabelled
+training pool. No held-out source enters either training stage.
+
+The history study fixes $k=1$ and varies total unlabelled recording counts over
+$N_U\in\{1,2,5,10,20,50,100,200,400\}$ and the full 800-recording training pool.
+Three nested class-blind pool selections are shared between E/F. The full-pool
+endpoints reuse the current main-study models, giving 2,700 additional pretraining
+and classifier fits. Macro-F1 is averaged over perturbation realizations and pool
+selections where applicable, then five folds within each repetition. Means and
+sample standard deviations are computed across ten repetition means.

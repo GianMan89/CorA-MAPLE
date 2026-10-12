@@ -22,10 +22,11 @@ byte-identical export of this study-specific extension.
 - `processed/audit.json`: stored dataset dimensions and summary statistics.
 - `source_manifest.json`: original and retained CSV hashes plus archive provenance.
 
-The average first-hour ACT count is 30.019. Raw-event conversion uses local sample
-times 0–59 minutes, with initially active channels represented by ACT at zero.
-The distinction between event conversion and original sample labels is documented
-in the perturbation module.
+The average first-hour ACT count is 30.019. Source sample labels 1–60 map to local
+observation times 0–59 minutes. The recorded per-channel initial state is retained
+as an independent snapshot; only subsequent ACT/RTN transitions are eligible for
+event-level perturbations. Initially active excerpts are represented by their
+snapshot without adding artificial activation notifications.
 
 ## Rebuild the processed tensor
 

@@ -1,0 +1,34 @@
+% Generated tables/figures come from a completed v2.1 workspace. Use only one
+% robustness-table alternative; paper length depends on the surrounding text.
+\begin{table*}[t]
+\caption{Macro-F1 at $k=1$ and $s=0.5$: mean $\pm$ sample SD across ten repetition means. P denotes corruption used during pretraining, and U denotes test-only mechanisms, for the proposed methods. All supervised training is clean-only. Training severity never exceeds $0.30$.}
+\label{tab:main}
+\centering\begingroup\small\setlength{\tabcolsep}{2pt}
+\input{tables/robustness_all_table.tex}
+\endgroup
+\end{table*}
+
+% Page-limited alternative: use robustness_main_table.tex above, and the complete
+% grouped pretraining-comparison table separately. Full per-operator values remain in the repo.
+% \begin{table*}[t]
+% \caption{Pretraining comparison at $k=1$. Trained/test-only columns are equally weighted operator means at $s=0.5$, formed within each fold before aggregation over ten repetition means.}
+% \label{tab:factorial}
+% \centering\begingroup\small\setlength{\tabcolsep}{2pt}
+% \input{tables/ablation_factorial_table.tex}
+% \endgroup
+% \end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/figure1_two_columns.pdf}
+\caption{Macro-F1 against label budget (left) and full-channel false-alarm severity at $k=1$ (right). Error bars show sample SD across ten repetition means. Shading and the vertical line mark the maximum training severity $s=0.30$.}
+\label{fig:profiles}
+\end{figure*}
+
+\begin{table}[t]
+\caption{Macro-F1 at $k=1$ versus available historical data $H_U$ [h]. E/F denote the proposed methods; Full=800 h. Values are mean $\pm$ sample SD across ten repetition means.}
+\label{tab:unlabelled_pool}
+\centering\begingroup\small\setlength{\tabcolsep}{1.5pt}
+\input{tables/unlabelled_pool_table_compact.tex}
+\endgroup
+\end{table}

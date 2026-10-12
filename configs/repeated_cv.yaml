@@ -3,28 +3,19 @@ study:
   name: primary
   kind: primary
   methods:
-  - scratch
-  - scratch_aug
-  - recon_excerpt
-  - maple_excerpt
-  - maple_full
-  - cora_maple_excerpt
-  - cora_maple_full
-  - EAC-1NN
-  - MBW-LR
-  - JAC-1NN
-  - WDI-1NN
-  - ACM-SVM
-  label_budgets:
-  - 1
-  - 2
-  - 5
-  - 20
-  label_draws:
-  - 0
-  model_seeds:
-  - 0
-  pool_sizes:
-  - full
-  pool_draws:
-  - 0
+    - scratch_excerpt
+    - maple_excerpt
+    - cora_maple_excerpt
+    - scratch_full
+    - maple_full
+    - cora_maple_full
+    - EAC-1NN
+    - MBW-LR
+    - JAC-1NN
+    - WDI-1NN
+    - ACM-SVM
+  label_budgets: [1, 2, 5, 20]
+  label_draws: [0]
+  model_seeds: [0]
+  pool_sizes: [full]
+  pool_draws: [0]

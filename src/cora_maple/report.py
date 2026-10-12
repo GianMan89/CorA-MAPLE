@@ -4,8 +4,8 @@ import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from .common import atomic_json, source_hash
-from .config import METHODS, BASELINES, PROPOSED
+from .common import atomic_json, source_hash, file_hash
+from .config import METHODS, BASELINES, PROPOSED, PROTOCOL, validate_config, operator_groups, OPERATOR_LABELS
 from .runner import completed, task_directory, score_predictions
 from .transforms import test_conditions
 
@@ -13,16 +13,29 @@ METRICS = ["macro_f1", "accuracy"]
 SPLIT_KEYS = ["repeat", "fold", "method", "k", "pool", "pool_size", "operator", "severity"]
 REPEAT_KEYS = ["repeat", "method", "k", "pool", "pool_size", "operator", "severity"]
 SUMMARY_KEYS = ["method", "k", "pool", "pool_size", "operator", "severity"]
-PAIRS = [(f"cora_maple_{s}", f"{other}_{s}") for s in ("excerpt", "full") for other in ("maple", "cora_recon", "cora_recon_var")]
-PAIRS += [(p, other) for p in PROPOSED for other in ("scratch", "scratch_aug")]
+PAIRS = []
+for scope in ("excerpt", "full"):
+    PAIRS += [(f"maple_{scope}", f"scratch_{scope}"),
+              (f"cora_maple_{scope}", f"maple_{scope}"),
+              (f"cora_maple_{scope}", f"scratch_{scope}")]
 PAIRS += [(p, baseline) for p in PROPOSED for baseline in BASELINES]
-PAIRS += [(f"cora_recon_{s}", f"recon_{s}") for s in ("excerpt", "full")]
-PAIRS += [("scratch_aug", "scratch"), ("scratch_aug_online", "scratch_aug"), ("cora_maple_full", "cora_maple_excerpt")]
+PAIRS += [("cora_maple_full", "cora_maple_excerpt")]
 
 
 def load_study(workspace: Path, study: str):
     folder = workspace / "studies" / study
-    return json.loads((folder / "plan.json").read_text()), json.loads((folder / "config.json").read_text())
+    plan = json.loads((folder / "plan.json").read_text())
+    cfg = json.loads((folder / "config.json").read_text())
+    # Never silently filter a saved study to obtain apparent completeness.
+    validate_config(cfg)
+    if plan.get("protocol") != PROTOCOL:
+        raise ValueError("Stored plan does not match the clean-only protocol; incompatible results cannot complete this study")
+    allowed = set(METHODS) | set(BASELINES)
+    if any(task["method"] not in allowed for task in plan["tasks"].values()):
+        raise ValueError("Stored plan contains unsupported methods")
+    if any(ident not in plan["tasks"] for ident in plan["evaluations"]):
+        raise ValueError("Stored plan is missing an evaluation task")
+    return plan, cfg
 
 
 def audit(workspace: Path, study: str, recompute: bool = True) -> dict:
@@ -53,6 +66,14 @@ def audit(workspace: Path, study: str, recompute: bool = True) -> dict:
             expected_keys = [f"{op}|{s:g}|{d}" for op, s, d in test_conditions(cfg)]
             if z["conditions"].tolist() != expected_keys:
                 raise AssertionError("Prediction condition identities/order do not match the planned suite")
+            if z["classes"].tolist() != index["classes"]:
+                raise AssertionError("Prediction class-name mapping mismatch")
+            if "lengths" not in z.files or z["lengths"].shape != (expected_conditions, len(part["test"])):
+                raise AssertionError("Missing observation-validity metadata")
+            if np.any(z["lengths"] < 1) or np.any(z["lengths"] > cfg["data"]["observation_samples"]):
+                raise AssertionError("Invalid supplied observation lengths")
+            if not np.isin(z["predictions"], np.arange(len(index["classes"]))).all():
+                raise AssertionError("Invalid predicted classes")
             if z["predictions"].shape != (expected_conditions, len(part["test"])):
                 raise AssertionError("Incomplete condition coverage")
             if recompute:
@@ -146,77 +167,13 @@ def lookup(summary, method, k, op, severity, pool="full"):
 
 
 def make_assets(summary: pd.DataFrame, cfg: dict, folder: Path):
-    """Publication tables and plots are written ONLY after completeness checks."""
-    tables, figures = folder / "tables", folder / "figures"
-    tables.mkdir(parents=True, exist_ok=True)
-    figures.mkdir(parents=True, exist_ok=True)
-    kind = cfg["study"]["kind"]
-    if kind == "primary":
-        methods = cfg["study"]["methods"]
-        for filename, columns in (("main_table.tex", [("Clean", "clean", 0.), ("Spurious", "spurious", .3)]),
-                                   ("transfer_table.tex", [("Burst", "burst", .3), ("Tag loss", "tag_dropout", .3), ("Mixed", "mixed", .3)])):
-            lines = [r"% Generated exclusively from complete repeated-CV results.", r"\begin{tabular}{@{}l" + "r" * len(columns) + r"@{}}", r"\toprule",
-                     "Method & " + " & ".join(c[0] for c in columns) + r" \\", r"\midrule"]
-            for name in methods:
-                lines.append(latex_name(name) + " & " + " & ".join((value(lookup(summary, name, 1, op, s)) if filename == "main_table.tex" else f"${lookup(summary, name, 1, op, s).macro_f1_mean:.3f}$") for _, op, s in columns) + r" \\")
-            lines += [r"\bottomrule", r"\end{tabular}"]
-            (tables / filename).write_text("\n".join(lines) + "\n")
-        plot_profiles(summary, cfg, figures)
-        facts = {}
-        for name in methods:
-            facts[method_label(name)] = {"clean_k1": float(lookup(summary, name, 1, "clean", 0).macro_f1_mean),
-                                        "spurious_k1_s03": float(lookup(summary, name, 1, "spurious", .3).macro_f1_mean)}
-        atomic_json(folder / "numeric_facts.json", facts)
-        summary.to_csv(folder / "paper_numeric_summary.csv", index=False)
-    elif kind == "pool":
-        lines = [r"% Available historical data; repeated observations do not add available hours.",
-                 r"\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lrrrr@{}}", r"\toprule",
-                 r"& \multicolumn{2}{c}{Clean} & \multicolumn{2}{c}{Spurious, $s=0.3$} \\",
-                 r"$H_U$ [h] & E & F & E & F \\", r"\midrule"]
-        for pool in cfg["study"]["pool_sizes"]:
-            name = "Full" if pool == "full" else f"{int(pool) * cfg['data']['observation_samples'] * cfg['data']['sample_period_minutes'] / 60:g}"
-            fields = [value(lookup(summary, method, 1, op, s, pool)) for op, s in (("clean", 0.), ("spurious", .3)) for method in PROPOSED]
-            lines.append(name + " & " + " & ".join(fields) + r" \\")
-        lines += [r"\bottomrule", r"\end{tabular*}"]
-        (tables / "unlabelled_pool_table_compact.tex").write_text("\n".join(lines) + "\n")
-    atomic_json(folder / "ASSET_PROVENANCE.json", {"protocol": cfg["protocol"], "study": cfg["study"]["name"],
-        "aggregation": f"Draws then within-split replicates, {cfg['cv']['n_splits']}-fold mean per repetition, mean and sample SD across {cfg['cv']['n_repeats']} repetition means.",
-        "interpretation": "Descriptive variability across repetition means; not an independence-based confidence interval."})
+    from .assets import make_assets as write_assets
+    write_assets(summary, cfg, folder)
 
 
 def plot_profiles(summary, cfg, out):
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    # Separate figures; matplotlib chooses the colors. Both contain the same 7 methods.
-    names = list(BASELINES) + list(PROPOSED)
-    markers = ["o", "s", "^", "v", "D", "P", "X"]
-    for filename, operator, k in (("clean_tep", "clean", None), ("spurious_tep_k1", "spurious", 1)):
-        fig, ax = plt.subplots(figsize=(4.2, 2.9))
-        for name, marker in zip(names, markers):
-            if operator == "clean":
-                data = summary[(summary.method == name) & (summary.operator == "clean") & (summary.pool == "full")].sort_values("k")
-                x = data.k.to_numpy()
-            else:
-                data = summary[(summary.method == name) & (summary.k == 1) & (summary.pool == "full")
-                               & summary.operator.isin(["clean", "spurious"])].sort_values("severity")
-                x = data.severity.to_numpy()
-            ax.errorbar(x, data.macro_f1_mean, yerr=data.macro_f1_sd, marker=marker, markersize=3.5,
-                        capsize=2, linewidth=1.2, label=method_label(name))
-        ax.set_xlabel("Labelled episodes per class, k" if k is None else "Spurious-event severity, s")
-        ax.set_ylabel("Macro-F1")
-        if k is None:
-            ax.set_xscale("log")
-            ax.set_xticks(cfg["study"]["label_budgets"], labels=list(map(str, cfg["study"]["label_budgets"])))
-        else:
-            ax.set_xticks(cfg["test"]["severities"])
-        ax.set_ylim(-.03, 1.03)
-        ax.tick_params(labelsize=8)
-        ax.legend(fontsize=7, loc="lower right", frameon=False)
-        fig.tight_layout(pad=.6)
-        for ext in ("pdf", "svg", "png"):
-            fig.savefig(out / f"{filename}.{ext}", dpi=220, bbox_inches="tight")
-        plt.close(fig)
+    from .plotting import render_profiles
+    render_profiles(summary, cfg, out)
 
 
 def report(workspace: Path, study: str) -> dict:
@@ -263,8 +220,13 @@ def report(workspace: Path, study: str) -> dict:
         pool_pairs["difference_to_full"] = pool_pairs.macro_f1 - pool_pairs.full_macro_f1
         pool_pairs.to_csv(folder / "pool_to_full_per_split.csv", index=False)
     write_exposure_report(workspace, plan, cfg, folder)
+    write_group_summaries(per_split, cfg, folder)
+    write_input_effects(workspace, plan, folder)
     make_assets(summary, cfg, folder)
-    atomic_json(folder / "REPORT_STATUS.json", {"complete": True, "audit": validation, "source": "workspace_tasks"})
+    atomic_json(folder / "config.json", cfg)
+    numerical_files = ("metrics_by_draw.csv", "per_fit.csv", "per_split.csv", "per_repeat.csv", "summary.csv", "config.json")
+    atomic_json(folder / "REPORT_STATUS.json", {"protocol": cfg["protocol"], "complete": True, "audit": validation, "source": "workspace_tasks",
+        "configuration": "config.json", "files": {name: file_hash(folder/name) for name in numerical_files}})
     return {"study": study, "output": str(folder), "metric_rows": len(rows), "n_repeat_means": cfg["cv"]["n_repeats"]}
 
 
@@ -283,3 +245,54 @@ def write_exposure_report(workspace: Path, plan: dict, cfg: dict, folder: Path) 
                         **statistics})
     if records:
         pd.DataFrame(records).to_csv(folder / 'pretraining_exposure.csv', index=False)
+
+
+def write_group_summaries(per_split: pd.DataFrame, cfg: dict, folder: Path) -> None:
+    """Operator-balanced groups are averaged within each fold, then repetitions.
+
+    This is not a pooled industrial prevalence model. Group membership is defined
+    by the proposed methods' planned exposure; no performance-based filtering.
+    """
+    groups = operator_groups(cfg)
+    groups["all_corruptions"] = cfg["test"]["operators"]
+    split_frames = []
+    base = ["repeat", "fold", "method", "k", "pool", "pool_size", "severity"]
+    for name in ("trained", "test_only", "all_corruptions"):
+        ops = groups[name]
+        if not ops:
+            continue
+        q = per_split[per_split.operator.isin(ops)]
+        counts = q.groupby(base, dropna=False).operator.nunique()
+        if not (counts == len(ops)).all():
+            raise ValueError(f"Incomplete operator-balanced group: {name}")
+        g = q.groupby(base, as_index=False)[METRICS].mean()
+        g["group"] = name
+        split_frames.append(g)
+    if not split_frames:
+        return
+    g = pd.concat(split_frames, ignore_index=True)
+    g.to_csv(folder/"group_per_split.csv", index=False)
+    keys = ["method", "k", "pool", "pool_size", "severity", "group"]
+    r = g.groupby(keys+["repeat"], as_index=False)[METRICS].mean()
+    r.to_csv(folder/"group_per_repeat.csv", index=False)
+    su = r.groupby(keys, as_index=False).agg(macro_f1_mean=("macro_f1", "mean"),
+          macro_f1_sd=("macro_f1", "std"), accuracy_mean=("accuracy", "mean"),
+          accuracy_sd=("accuracy", "std"), n_repeats=("repeat", "nunique"))
+    su.to_csv(folder/"group_summary.csv", index=False)
+
+
+def write_input_effects(workspace: Path, plan: dict, folder: Path) -> None:
+    """One source-level perturbation audit per split, never duplicated per model."""
+    paths = set()
+    for ident in plan["evaluations"]:
+        p = task_directory(workspace, ident)/"evaluation.json"
+        if p.exists():
+            info = json.loads(p.read_text())
+            paths.add((workspace/info["test_cache"]).with_suffix(".effects.csv"))
+    frames = [pd.read_csv(p) for p in sorted(paths)]
+    if frames:
+        raw = pd.concat(frames, ignore_index=True)
+        raw.to_csv(folder/"test_input_effects_per_source.csv", index=False)
+        keys = ["repeat", "fold", "operator", "severity", "draw"]
+        metrics = [c for c in raw.columns if c not in keys+["source_id"]]
+        raw.groupby(keys, as_index=False)[metrics].mean().to_csv(folder/"test_input_effects_per_draw.csv", index=False)

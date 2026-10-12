@@ -1,10 +1,8 @@
-# Crossed sensitivity analysis, not just relabelling CV repetitions as training seeds.
-# At each of the same 50 splits, independently vary three label subsets and three
-# initialization/training seeds. The (0,0) cell reuses the NEW primary study.
 extends: ../repeated_cv.yaml
 study:
   name: variability_k1
   kind: variability
+  methods: [cora_maple_excerpt, cora_maple_full]
   label_budgets: [1]
   label_draws: [0, 1, 2]
   model_seeds: [0, 1, 2]
