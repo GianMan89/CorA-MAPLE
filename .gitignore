@@ -16,3 +16,5 @@ validation/local/
 # Notebook/editor/OS caches
 .ipynb_checkpoints/
 Thumbs.db
+
+paper/tep_cv1x5
