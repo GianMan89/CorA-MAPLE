@@ -1,0 +1,563 @@
+{
+  "ACM-SVM": {
+    "clean": {
+      "k": 1,
+      "mean": 0.5922814577030029,
+      "n_repetitions": 10,
+      "sd": 0.033074552161645156,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.18034492072508054,
+      "n_repetitions": 10,
+      "sd": 0.010782489484457362,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.5502898088619091,
+      "n_repetitions": 10,
+      "sd": 0.030894550551521578,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.5308863015468571,
+      "n_repetitions": 10,
+      "sd": 0.0174770027759471,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.20598942175337553,
+      "n_repetitions": 10,
+      "sd": 0.02294575224811186,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.5039217340191198,
+      "n_repetitions": 10,
+      "sd": 0.022782488764945097,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.6581893996546598,
+      "n_repetitions": 10,
+      "sd": 0.0241031915460129,
+      "severity": 0.5
+    }
+  },
+  "CorA-MAPLE-E": {
+    "clean": {
+      "k": 1,
+      "mean": 0.9592146581814844,
+      "n_repetitions": 10,
+      "sd": 0.022796801656890263,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.7121612501329283,
+      "n_repetitions": 10,
+      "sd": 0.03054707020456718,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.9075137142545427,
+      "n_repetitions": 10,
+      "sd": 0.03449883347517274,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.7721289509968299,
+      "n_repetitions": 10,
+      "sd": 0.020059710856669483,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.8215377711569103,
+      "n_repetitions": 10,
+      "sd": 0.020511058388433694,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.874605617544486,
+      "n_repetitions": 10,
+      "sd": 0.017768792754589834,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.9226038956737795,
+      "n_repetitions": 10,
+      "sd": 0.02426041439115568,
+      "severity": 0.5
+    }
+  },
+  "CorA-MAPLE-F": {
+    "clean": {
+      "k": 1,
+      "mean": 0.977283012033012,
+      "n_repetitions": 10,
+      "sd": 0.00952551510621647,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.7716235444153073,
+      "n_repetitions": 10,
+      "sd": 0.021459954158556945,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.6936893514770187,
+      "n_repetitions": 10,
+      "sd": 0.06747640204189079,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.7896727143686489,
+      "n_repetitions": 10,
+      "sd": 0.01644562094918896,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.8520924603873388,
+      "n_repetitions": 10,
+      "sd": 0.01661094693066411,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.894125167231263,
+      "n_repetitions": 10,
+      "sd": 0.013190061358157841,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.9326267410803499,
+      "n_repetitions": 10,
+      "sd": 0.012843320545395082,
+      "severity": 0.5
+    }
+  },
+  "EAC-1NN": {
+    "clean": {
+      "k": 1,
+      "mean": 0.773710791048129,
+      "n_repetitions": 10,
+      "sd": 0.03156842286605485,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.5251188497560241,
+      "n_repetitions": 10,
+      "sd": 0.02805393577742712,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.7717000389547847,
+      "n_repetitions": 10,
+      "sd": 0.019062806147211207,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.6951373505872083,
+      "n_repetitions": 10,
+      "sd": 0.02595933382700201,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.5431970652181255,
+      "n_repetitions": 10,
+      "sd": 0.024993547167648938,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.7635407881224594,
+      "n_repetitions": 10,
+      "sd": 0.034792748270767566,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.7878725008094858,
+      "n_repetitions": 10,
+      "sd": 0.03411594379406642,
+      "severity": 0.5
+    }
+  },
+  "JAC-1NN": {
+    "clean": {
+      "k": 1,
+      "mean": 0.7955371146111674,
+      "n_repetitions": 10,
+      "sd": 0.024414593162534616,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.21713260094522063,
+      "n_repetitions": 10,
+      "sd": 0.026135125553662472,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.7551380864045443,
+      "n_repetitions": 10,
+      "sd": 0.029077117459052726,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.7052916746745411,
+      "n_repetitions": 10,
+      "sd": 0.026083508848837412,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.6461376132075203,
+      "n_repetitions": 10,
+      "sd": 0.01732172100248977,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.6723650881080316,
+      "n_repetitions": 10,
+      "sd": 0.028562429336015993,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.7942529344637629,
+      "n_repetitions": 10,
+      "sd": 0.0237274739473208,
+      "severity": 0.5
+    }
+  },
+  "MAPLE-E": {
+    "clean": {
+      "k": 1,
+      "mean": 0.981941097239822,
+      "n_repetitions": 10,
+      "sd": 0.015937753950992617,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.10458158544474047,
+      "n_repetitions": 10,
+      "sd": 0.013872254191890487,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.8692622565806054,
+      "n_repetitions": 10,
+      "sd": 0.032432006602178626,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.6816133841796872,
+      "n_repetitions": 10,
+      "sd": 0.00933866460433782,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.7097347932525813,
+      "n_repetitions": 10,
+      "sd": 0.029728622690362267,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.5120077777818326,
+      "n_repetitions": 10,
+      "sd": 0.028845684916891223,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.8915736456278159,
+      "n_repetitions": 10,
+      "sd": 0.015783188132036562,
+      "severity": 0.5
+    }
+  },
+  "MAPLE-F": {
+    "clean": {
+      "k": 1,
+      "mean": 0.9621818529807757,
+      "n_repetitions": 10,
+      "sd": 0.020086679932092004,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.11558187229980925,
+      "n_repetitions": 10,
+      "sd": 0.015902109616624555,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.8220181284076613,
+      "n_repetitions": 10,
+      "sd": 0.047872658162348536,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.6243964951912961,
+      "n_repetitions": 10,
+      "sd": 0.02384755705563779,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.6565734660629023,
+      "n_repetitions": 10,
+      "sd": 0.04696030647535919,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.4911304752879415,
+      "n_repetitions": 10,
+      "sd": 0.032506023826057225,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.8318429271692839,
+      "n_repetitions": 10,
+      "sd": 0.031003944357488277,
+      "severity": 0.5
+    }
+  },
+  "MBW-LR": {
+    "clean": {
+      "k": 1,
+      "mean": 0.6529296784766212,
+      "n_repetitions": 10,
+      "sd": 0.036264849836682066,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.2928597570093936,
+      "n_repetitions": 10,
+      "sd": 0.0196174751945413,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.6747780330362949,
+      "n_repetitions": 10,
+      "sd": 0.045375833130867724,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.5904502240748736,
+      "n_repetitions": 10,
+      "sd": 0.03242823443431807,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.503835057635734,
+      "n_repetitions": 10,
+      "sd": 0.01784299775441317,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.6251367690150057,
+      "n_repetitions": 10,
+      "sd": 0.03544889428381939,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.6594139877931023,
+      "n_repetitions": 10,
+      "sd": 0.03711530311675983,
+      "severity": 0.5
+    }
+  },
+  "Scratch-E": {
+    "clean": {
+      "k": 1,
+      "mean": 0.9757129676908562,
+      "n_repetitions": 10,
+      "sd": 0.015797726106246978,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.24615143603268225,
+      "n_repetitions": 10,
+      "sd": 0.02749748249809575,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.7263897153363208,
+      "n_repetitions": 10,
+      "sd": 0.07056354415542053,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.6542638141003313,
+      "n_repetitions": 10,
+      "sd": 0.011760394055732327,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.677086095843772,
+      "n_repetitions": 10,
+      "sd": 0.028268192070351136,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.7083676457386028,
+      "n_repetitions": 10,
+      "sd": 0.022826058418513897,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.871273825115211,
+      "n_repetitions": 10,
+      "sd": 0.0248661055351908,
+      "severity": 0.5
+    }
+  },
+  "Scratch-F": {
+    "clean": {
+      "k": 1,
+      "mean": 0.9757129676908562,
+      "n_repetitions": 10,
+      "sd": 0.015797726106246978,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.24615143603268225,
+      "n_repetitions": 10,
+      "sd": 0.02749748249809575,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.7263897153363208,
+      "n_repetitions": 10,
+      "sd": 0.07056354415542053,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.6542638141003313,
+      "n_repetitions": 10,
+      "sd": 0.011760394055732327,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.677086095843772,
+      "n_repetitions": 10,
+      "sd": 0.028268192070351136,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.7083676457386028,
+      "n_repetitions": 10,
+      "sd": 0.022826058418513897,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.871273825115211,
+      "n_repetitions": 10,
+      "sd": 0.0248661055351908,
+      "severity": 0.5
+    }
+  },
+  "WDI-1NN": {
+    "clean": {
+      "k": 1,
+      "mean": 0.7444302533763427,
+      "n_repetitions": 10,
+      "sd": 0.03659639296565133,
+      "severity": 0.0
+    },
+    "false_full": {
+      "k": 1,
+      "mean": 0.48008867379625464,
+      "n_repetitions": 10,
+      "sd": 0.03495042898508013,
+      "severity": 0.5
+    },
+    "late_start": {
+      "k": 1,
+      "mean": 0.5523118351470933,
+      "n_repetitions": 10,
+      "sd": 0.040901334879735,
+      "severity": 0.5
+    },
+    "missing": {
+      "k": 1,
+      "mean": 0.46328946158667045,
+      "n_repetitions": 10,
+      "sd": 0.03347680793435072,
+      "severity": 0.5
+    },
+    "missing_full": {
+      "k": 1,
+      "mean": 0.33022941104961245,
+      "n_repetitions": 10,
+      "sd": 0.035096203097783815,
+      "severity": 0.5
+    },
+    "spurious": {
+      "k": 1,
+      "mean": 0.7231806308468239,
+      "n_repetitions": 10,
+      "sd": 0.02640671071562561,
+      "severity": 0.5
+    },
+    "timing": {
+      "k": 1,
+      "mean": 0.7400343744513727,
+      "n_repetitions": 10,
+      "sd": 0.035919155880791885,
+      "severity": 0.5
+    }
+  }
+}

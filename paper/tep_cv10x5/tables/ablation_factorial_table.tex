@@ -1,0 +1,12 @@
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lllccc@{}}
+\toprule
+Method & Pretraining & Classifier & Clean & Trained, $s=0.5$ & Test-only, $s=0.5$ \\
+\midrule
+\emph{Scratch-E} & None & Clean CE & $0.976\pm0.016$ & $0.598\pm0.017$ & $0.696\pm0.028$ \\
+\emph{MAPLE-E} & Masked SSL & Clean CE & $0.982\pm0.016$ & $0.569\pm0.012$ & $0.688\pm0.014$ \\
+\emph{CorA-MAPLE-E} & Corrupted SSL & Clean CE & $0.959\pm0.023$ & $0.819\pm0.017$ & $0.851\pm0.018$ \\
+\emph{Scratch-F} & None & Clean CE & $0.976\pm0.016$ & $0.598\pm0.017$ & $0.696\pm0.028$ \\
+\emph{MAPLE-F} & Masked SSL & Clean CE & $0.962\pm0.020$ & $0.535\pm0.023$ & $0.646\pm0.021$ \\
+\emph{CorA-MAPLE-F} & Corrupted SSL & Clean CE & $0.977\pm0.010$ & $0.852\pm0.013$ & $0.792\pm0.023$ \\
+\bottomrule
+\end{tabular*}

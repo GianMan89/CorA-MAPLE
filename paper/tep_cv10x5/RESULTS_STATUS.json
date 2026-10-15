@@ -1,0 +1,7 @@
+{
+  "complete": true,
+  "n_repeats": 10,
+  "n_splits": 5,
+  "protocol": "cora_maple_clean_ft_cv10x5_v2_1",
+  "source": "completed_cv10x5_tasks"
+}

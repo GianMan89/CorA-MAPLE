@@ -1,0 +1,28 @@
+{
+  "aggregation": "Perturbation draws and pool draws, then folds within repetition; mean/sample SD of repetition means.",
+  "delay_policy": "crop_rebase_mask_padding",
+  "event_initial_state": "known_snapshot",
+  "group_definition": {
+    "pretraining_only": [
+      "false_full",
+      "missing_full",
+      "timing"
+    ],
+    "test_only": [
+      "late_start",
+      "missing",
+      "spurious"
+    ],
+    "trained": [
+      "false_full",
+      "missing_full",
+      "timing"
+    ]
+  },
+  "headline_severity": 0.5,
+  "hyperparameter_selection": "Fixed for the configured study; no score-dependent checkpoint selection. Repeated partitions of one dataset do not constitute independent external validation.",
+  "n_repeats": 10,
+  "n_splits": 5,
+  "protocol": "cora_maple_clean_ft_cv10x5_v2_1",
+  "study": "pool_sizes"
+}
